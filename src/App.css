@@ -1,0 +1,242 @@
+/* Genel stil ayarları */
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: #222222;
+  height: 100vh;
+  margin: 0;
+  transition: background-color 0.3s ease;
+  position: relative;
+}
+
+.app {
+  padding: 30px;
+}
+
+.todo-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin: 10px;
+  padding: 20px;
+  max-width: 1400px;
+  gap: 20px;
+}
+
+/* Form ve input stilleri */
+.todo-form {
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  gap: 20px;
+  box-shadow: 0 0 10px rgb(219, 231, 230);
+  border-radius: 8px;
+  background-color: #353434;
+  height: 300px;
+  width: 400px;
+}
+
+.todo-form input,
+.todo-form button {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.todo-form input {
+  padding: 12px 15px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-size: 16px;
+  background-color: #fff;
+}
+
+.todo-form button {
+  padding: 12px 15px;
+  background-color: #4a4b4b;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.todo-form button:hover {
+  background-color: #5d5d5d;
+}
+
+/* Liste stilleri */
+.todo-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  width: calc(100% - 560px);
+  overflow-y: auto;
+  position: absolute;
+  top: 50px;
+  left: 540px;
+}
+span.show-more {
+  cursor: pointer;
+}
+/* Todo item stilleri */
+.todo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  background-color: #353434;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.3s ease;
+}
+
+.todo-item:hover {
+  background-color: #414040;
+}
+
+.todo-item.completed span {
+  text-decoration: line-through;
+  color: #999;
+}
+
+.todo-item span {
+  flex-grow: 1;
+  text-align: left;
+  font-size: 16px;
+  padding-right: 10px;
+}
+
+.todo-description {
+  font-size: 14px;
+  color: #808080;
+  opacity: 0.8;
+  margin-left: 10px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actions button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: white;
+  padding: 5px;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+}
+
+.actions button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Popup stilleri */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-content {
+  background: #222222;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+}
+
+.popup-content h2 {
+  margin-top: 0;
+  color: white;
+}
+
+.popup-content p {
+  color: white;
+}
+
+.popup-content button {
+  background-color: #4a4b4b;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-right: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.popup-content button:hover {
+  background-color: #363636;
+}
+
+/* Tarih inputu için stiller */
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+input {
+  padding-right: 30px;
+  width: 100%;
+  padding-left: 10px;
+  height: 40px;
+}
+
+.calendar-icon {
+  position: absolute;
+  right: 10px;
+  color: #999;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
+input[type="date"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding: 10px;
+}
+
+/* Tarih bilgisi stilleri */
+.todo-item .date-info {
+  display: none;
+  position: absolute;
+  bottom: -50px;
+  left: 0;
+  background-color: #494949;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #ffffff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 0;
+  transform: translateY(10px);
+  width: 98%;
+}
+
+.todo-item:hover .date-info {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+.date-display {
+  display: none;
+}
