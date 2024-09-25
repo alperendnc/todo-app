@@ -32,27 +32,25 @@ This project is a simple and stylish To-Do List application that helps you keep 
 To run this project locally, follow these steps:
 
 1.  Navigate to the project directory:
-    ``` bash
+    ```bash
     cd todo-list
     ```
 2.  If you are using npm open terminal and write this sentence:
-    ``` bash
+    ```bash
     npm install
     ```
-3.  Or If you are using yarn 
-    ``` bash
+3.  Or If you are using yarn
+    ```bash
     yarn install
     ```
-## Running the Project   
+
+## Running the Project
 
 1.  If you are using npm open terminal and write this sentence:
-    ``` bash
+    ```bash
     npm run
     ```
-2.  Or If you are using yarn 
-    ``` bash
+2.  Or If you are using yarn
+    ```bash
     yarn run
     ```
- ## License
-    
-    This project is licensed under the MIT License. 
