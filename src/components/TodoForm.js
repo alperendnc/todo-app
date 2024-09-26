@@ -3,7 +3,9 @@ import useTodos from "../hooks/useTodos";
 import { v4 as uuidv4 } from "uuid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
-import dayjs from "dayjs"; // dayjs'i içe aktarıyoruz
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import dayjs from "dayjs";
 
 const TodoForm = () => {
   const { addTodo, editingTodo, isEdit } = useTodos();
@@ -43,35 +45,31 @@ const TodoForm = () => {
     setShowNoteInput(!showNoteInput);
   };
 
-  const handleDateIconClick = () => {
-    setShowDateInput(!showDateInput);
+  const handleDateChange = (date) => {
+    setTask({ ...task, date: dayjs(date).format("YYYY-MM-DD") });
   };
 
   return (
     <form className="todo-form" onSubmit={handleSubmit}>
       <div className="input-container">
-        {!showDateInput && (
-          <input
-            type="text"
-            placeholder="Enter task"
-            value={task.task}
-            onChange={(e) => setTask({ ...task, task: e.target.value })}
-          />
-        )}
+        <input
+          type="text"
+          placeholder="Enter task"
+          value={task.task}
+          onChange={(e) => setTask({ ...task, task: e.target.value })}
+        />
         <FontAwesomeIcon
           icon={faCalendarAlt}
           className="calendar-icon"
-          onClick={handleDateIconClick}
+          onClick={() => setShowDateInput(!showDateInput)}
         />
         {showDateInput ? (
-          <input
-            type="date"
-            value={task.date}
-            onChange={(e) => {
-              // dayjs ile tarih formatlama
-              const formattedDate = dayjs(e.target.value).format("YYYY-MM-DD");
-              setTask({ ...task, date: formattedDate });
-            }}
+          <DatePicker
+            selected={task.date ? new Date(task.date) : null}
+            onChange={handleDateChange}
+            dateFormat="yyyy-MM-dd"
+            placeholderText="Select a date"
+            onClickOutside={() => setShowDateInput(false)}
             autoFocus
           />
         ) : (
