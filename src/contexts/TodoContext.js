@@ -25,7 +25,6 @@ export const TodoProvider = ({ children }) => {
 
   const addTodo = (newTodo) => {
     if (isEdit) {
-      // TODO: rewrite these lines
       const todoList = todos.filter((todo) => todo.id !== newTodo.id);
       setTodos([...todoList, newTodo]);
       setIsEdit(false);
