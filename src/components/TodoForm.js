@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import useTodos from "../hooks/useTodos";
 import { v4 as uuidv4 } from "uuid";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import dayjs from "dayjs";
 
-const TodoForm = () => {
-  const { addTodo, editingTodo, isEdit } = useTodos();
+const TodoForm = ({ addTodo, todos, setFilteredTodos }) => {
+  const { editingTodo, isEdit } = useTodos();
 
   const defaultValues = {
     id: "",
@@ -22,6 +20,7 @@ const TodoForm = () => {
   const [task, setTask] = useState(defaultValues);
   const [showNoteInput, setShowNoteInput] = useState(false);
   const [showDateInput, setShowDateInput] = useState(false);
+  const [selectedDate] = useState(null);
 
   useEffect(() => {
     if (isEdit) {
@@ -39,14 +38,35 @@ const TodoForm = () => {
     setTask(defaultValues);
     setShowNoteInput(false);
     setShowDateInput(false);
+    filterTodos(selectedDate);
   };
 
   const handleAddNoteClick = () => {
     setShowNoteInput(!showNoteInput);
   };
 
+  const handleAddDateClick = () => {
+    setShowDateInput(!showDateInput);
+  };
+
   const handleDateChange = (date) => {
     setTask({ ...task, date: dayjs(date).format("YYYY-MM-DD") });
+  };
+
+  const filterTodos = (date) => {
+    // Eğer todos dizisi yoksa ya da boşsa hiçbir şey yapma
+    if (!todos || todos.length === 0) {
+      return;
+    }
+
+    if (!date) {
+      setFilteredTodos(todos); // Eğer tarih seçilmediyse tüm görevleri göster
+    } else {
+      const filtered = todos.filter((todo) =>
+        dayjs(todo.date).isSame(date, "day")
+      );
+      setFilteredTodos(filtered);
+    }
   };
 
   return (
@@ -58,27 +78,6 @@ const TodoForm = () => {
           value={task.task}
           onChange={(e) => setTask({ ...task, task: e.target.value })}
         />
-        <FontAwesomeIcon
-          icon={faCalendarAlt}
-          className="calendar-icon"
-          onClick={() => setShowDateInput(!showDateInput)}
-        />
-        {showDateInput ? (
-          <DatePicker
-            selected={task.date ? new Date(task.date) : null}
-            onChange={handleDateChange}
-            dateFormat="yyyy-MM-dd"
-            placeholderText="Select a date"
-            onClickOutside={() => setShowDateInput(false)}
-            autoFocus
-          />
-        ) : (
-          task.date && (
-            <span className="date-display">
-              {dayjs(task.date).format("MMMM D, YYYY")}
-            </span>
-          )
-        )}
       </div>
       <input
         type="text"
@@ -87,9 +86,11 @@ const TodoForm = () => {
         onChange={(e) => setTask({ ...task, description: e.target.value })}
       />
       <button type="submit">{isEdit ? "Edit Task" : "Add Task"}</button>
+
       <button type="button" onClick={handleAddNoteClick}>
         {showNoteInput ? "Hide Note" : "Add Note"}
       </button>
+
       {showNoteInput && (
         <div>
           <input
@@ -97,6 +98,21 @@ const TodoForm = () => {
             placeholder="Enter Note"
             value={task.note}
             onChange={(e) => setTask({ ...task, note: e.target.value })}
+          />
+        </div>
+      )}
+
+      <button type="button" onClick={handleAddDateClick}>
+        {showDateInput ? "Hide Date" : "Add Date"}
+      </button>
+
+      {showDateInput && (
+        <div>
+          <DatePicker
+            selected={task.date ? new Date(task.date) : null}
+            onChange={handleDateChange}
+            dateFormat="yyyy-MM-dd"
+            placeholderText="Select a date"
           />
         </div>
       )}

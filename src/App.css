@@ -29,7 +29,7 @@ body {
   box-shadow: 0 0 10px rgb(219, 231, 230);
   border-radius: 8px;
   background-color: #353434;
-  height: 300px;
+  max-height: 400px;
   width: 400px;
 }
 
@@ -72,9 +72,11 @@ body {
   top: 50px;
   left: 540px;
 }
+
 span.show-more {
   cursor: pointer;
 }
+
 .todo-item {
   display: flex;
   justify-content: space-between;
@@ -230,6 +232,18 @@ input[type="date"] {
   opacity: 1;
   transform: translateY(0);
 }
+
 .date-display {
   display: none;
+}
+.react-datepicker-wrapper {
+  display: inline-block;
+  padding: 0;
+  border: 0;
+  width: 100%;
+}
+.react-datepicker__input-container {
+  position: relative;
+  display: inline-block;
+  width: 100%;
 }
