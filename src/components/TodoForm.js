@@ -5,9 +5,8 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import dayjs from "dayjs";
 
-const TodoForm = ({ addTodo, todos, setFilteredTodos }) => {
-  const { editingTodo, isEdit } = useTodos();
-
+const TodoForm = () => {
+  const { addTodo, editingTodo, isEdit } = useTodos();
   const defaultValues = {
     id: "",
     task: "",
@@ -20,7 +19,6 @@ const TodoForm = ({ addTodo, todos, setFilteredTodos }) => {
   const [task, setTask] = useState(defaultValues);
   const [showNoteInput, setShowNoteInput] = useState(false);
   const [showDateInput, setShowDateInput] = useState(false);
-  const [selectedDate] = useState(null);
 
   useEffect(() => {
     if (isEdit) {
@@ -38,7 +36,6 @@ const TodoForm = ({ addTodo, todos, setFilteredTodos }) => {
     setTask(defaultValues);
     setShowNoteInput(false);
     setShowDateInput(false);
-    filterTodos(selectedDate);
   };
 
   const handleAddNoteClick = () => {
@@ -51,22 +48,6 @@ const TodoForm = ({ addTodo, todos, setFilteredTodos }) => {
 
   const handleDateChange = (date) => {
     setTask({ ...task, date: dayjs(date).format("YYYY-MM-DD") });
-  };
-
-  const filterTodos = (date) => {
-    // Eğer todos dizisi yoksa ya da boşsa hiçbir şey yapma
-    if (!todos || todos.length === 0) {
-      return;
-    }
-
-    if (!date) {
-      setFilteredTodos(todos); // Eğer tarih seçilmediyse tüm görevleri göster
-    } else {
-      const filtered = todos.filter((todo) =>
-        dayjs(todo.date).isSame(date, "day")
-      );
-      setFilteredTodos(filtered);
-    }
   };
 
   return (
