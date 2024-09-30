@@ -40,7 +40,7 @@ const TodoItem = ({ todo }) => {
 
   const fullText = todo.task;
   const truncatedText =
-    fullText.length > 20 ? fullText.slice(0, 20) + "..." : fullText;
+    fullText.length > 30 ? fullText.slice(0, 30) + "..." : fullText;
 
   const toggleText = () => {
     setIsExpanded(!isExpanded);
@@ -48,8 +48,8 @@ const TodoItem = ({ todo }) => {
 
   const fullDescription = todo.description || "";
   const truncatedDescription =
-    fullDescription.length > 20
-      ? fullDescription.slice(0, 20) + "..."
+    fullDescription.length > 30
+      ? fullDescription.slice(0, 30) + "..."
       : fullDescription;
 
   const toggleDescription = () => {
@@ -66,9 +66,9 @@ const TodoItem = ({ todo }) => {
         <span onClick={() => toggleTodo(todo.id)}>
           {isExpanded ? fullText : truncatedText}
         </span>
-        {fullText.length > 20 && (
+        {fullText.length > 30 && (
           <span className="show-more" onClick={toggleText}>
-            {isExpanded ? "Daha az" : "daha fazla"}
+            {isExpanded ? "Show less" : "Show more "}
           </span>
         )}
 
@@ -77,9 +77,9 @@ const TodoItem = ({ todo }) => {
             <span className="todo-description">
               {isDescExpanded ? fullDescription : truncatedDescription}
             </span>
-            {fullDescription.length > 20 && (
+            {fullDescription.length > 30 && (
               <span className="show-more" onClick={toggleDescription}>
-                {isDescExpanded ? "Daha az" : "Daha fazla"}
+                {isDescExpanded ? "Show less" : "Show more"}
               </span>
             )}
           </>
