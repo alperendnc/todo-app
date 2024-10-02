@@ -2,7 +2,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCalendarDay,
   faCalendarAlt,
-  faSearch,
+  faHome,
+  faList,
+  faHistory,
 } from "@fortawesome/free-solid-svg-icons";
 
 const Navbar = () => {
@@ -10,22 +12,25 @@ const Navbar = () => {
     <nav className="navbar">
       <ul>
         <li>
-          <a href="/">
-            <FontAwesomeIcon className="nav-icon" icon={faSearch} />
-            Ara
-          </a>
+          <FontAwesomeIcon className="nav-icon" icon={faHome} />
+          Main Menu
         </li>
         <li>
-          <a href="/bugun">
-            <FontAwesomeIcon className="nav-icon" icon={faCalendarDay} />
-            Bugün
-          </a>
+          <FontAwesomeIcon className="nav-icon" icon={faCalendarDay} />
+          Today
         </li>
         <li>
-          <a href="/yaklasan">
-            <FontAwesomeIcon className="nav-icon" icon={faCalendarAlt} />
-            Yaklaşan
-          </a>
+          <FontAwesomeIcon className="nav-icon" icon={faCalendarAlt} />
+          Upcoming
+        </li>
+        <li>
+          <FontAwesomeIcon className="nav-icon" icon={faHistory} />
+          Past
+        </li>
+        <div className="nav-divider"></div>
+        <li>
+          <FontAwesomeIcon className="nav-icon" icon={faList} />
+          New List
         </li>
       </ul>
     </nav>

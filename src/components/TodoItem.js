@@ -38,7 +38,7 @@ const TodoItem = ({ todo }) => {
     setShowDate(true);
   };
 
-  const fullText = todo.task;
+  const fullText = todo.title;
   const truncatedText =
     fullText.length > 30 ? fullText.slice(0, 30) + "..." : fullText;
 
@@ -68,7 +68,7 @@ const TodoItem = ({ todo }) => {
         </span>
         {fullText.length > 30 && (
           <span className="show-more" onClick={toggleText}>
-            {isExpanded ? "Show less" : "Show more "}
+            {isExpanded ? "Show less" : "Show more"}
           </span>
         )}
 
@@ -92,7 +92,7 @@ const TodoItem = ({ todo }) => {
           <button onClick={handleShowPopup}>
             <FontAwesomeIcon icon={faStickyNote} />
           </button>
-          <button onClick={() => handleEdit()}>
+          <button onClick={handleEdit}>
             <FontAwesomeIcon icon={faEdit} />
           </button>
           <button onClick={() => deleteTodo(todo.id)}>

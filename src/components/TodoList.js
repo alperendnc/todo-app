@@ -2,17 +2,16 @@ import { TodoItem, TodoForm } from "./";
 import useTodos from "../hooks/useTodos";
 
 export default function TodoList() {
-  const { todos, addTodo } = useTodos();
+  const { todos } = useTodos();
 
   return (
     <div className="todo-container">
-      <TodoForm addTodo={addTodo} />
-
-      <div className="todo-content">
-        {todos.map((todo, index) => (
-          <TodoItem key={index} todo={todo} />
+      <TodoForm />
+      <ul className="todo-list">
+        {todos.map((todo) => (
+          <TodoItem key={todo.id} todo={todo} />
         ))}
-      </div>
+      </ul>
     </div>
   );
 }
