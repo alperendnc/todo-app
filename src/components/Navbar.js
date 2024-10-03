@@ -7,23 +7,23 @@ import {
   faHistory,
 } from "@fortawesome/free-solid-svg-icons";
 
-const Navbar = () => {
+const Navbar = ({ setFilterType }) => {
   return (
     <nav className="navbar">
       <ul>
-        <li>
+        <li onClick={() => setFilterType("all")}>
           <FontAwesomeIcon className="nav-icon" icon={faHome} />
           Main Menu
         </li>
-        <li>
+        <li onClick={() => setFilterType("today")}>
           <FontAwesomeIcon className="nav-icon" icon={faCalendarDay} />
           Today
         </li>
-        <li>
+        <li onClick={() => setFilterType("upcoming")}>
           <FontAwesomeIcon className="nav-icon" icon={faCalendarAlt} />
           Upcoming
         </li>
-        <li>
+        <li onClick={() => setFilterType("past")}>
           <FontAwesomeIcon className="nav-icon" icon={faHistory} />
           Past
         </li>

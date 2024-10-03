@@ -56,12 +56,19 @@ const TodoItem = ({ todo }) => {
     setIsDescExpanded(!isDescExpanded);
   };
 
+  const priorityClass =
+    todo.priority === "High"
+      ? "priority-high"
+      : todo.priority === "Medium"
+      ? "priority-medium"
+      : "priority-low";
+
   return (
     <ul>
       <li
         className={`todo-item ${
           todo.completed ? "completed" : "not-completed"
-        }`}
+        } ${priorityClass}`}
       >
         <span onClick={() => toggleTodo(todo.id)}>
           {isExpanded ? fullText : truncatedText}

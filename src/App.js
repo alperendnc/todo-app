@@ -1,15 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { TodoProvider } from "./contexts/TodoContext";
 import "./App.css";
 import TodoList from "./components/TodoList";
 import Navbar from "./components/Navbar";
 
 function App() {
+  const [filterType, setFilterType] = useState("all");
+
   return (
     <TodoProvider>
       <Navbar />
+      <Navbar setFilterType={setFilterType} />
       <div className="App">
-        <TodoList />
+        <TodoList filterType={filterType} />
       </div>
     </TodoProvider>
   );

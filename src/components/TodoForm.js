@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 
 const TodoForm = () => {
   const { addTodo, editingTodo, isEdit } = useTodos();
+
   const defaultValues = {
     id: "",
     title: "",
@@ -11,12 +12,15 @@ const TodoForm = () => {
     completed: false,
     note: "",
     date: "",
+    priority: "",
   };
 
   const [task, setTask] = useState(defaultValues);
   const [isTaskInputVisible, setIsTaskInputVisible] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState("");
+  const [isPriorityDropdownVisible, setIsPriorityDropdownVisible] =
+    useState(false);
 
   useEffect(() => {
     if (isEdit) {
@@ -27,7 +31,7 @@ const TodoForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    let id = isEdit ? editingTodo.id : uuidv4();
+    const id = isEdit ? editingTodo.id : uuidv4();
     addTodo({ ...task, id });
     setTask(defaultValues);
     setIsTaskInputVisible(false);
@@ -45,6 +49,15 @@ const TodoForm = () => {
   const handleModalSubmit = (e) => {
     e.preventDefault();
     closeModal();
+  };
+
+  const togglePriorityDropdown = () => {
+    setIsPriorityDropdownVisible(!isPriorityDropdownVisible);
+  };
+
+  const handlePrioritySelect = (priority) => {
+    setTask({ ...task, priority });
+    setIsPriorityDropdownVisible(false);
   };
 
   return (
@@ -71,6 +84,9 @@ const TodoForm = () => {
 
         {isTaskInputVisible && task.title !== "" && (
           <div className="add-buttons">
+            <button type="button" onClick={togglePriorityDropdown}>
+              {task.priority ? `Priority: ${task.priority}` : "Set Priority"}
+            </button>
             <button type="button" onClick={() => openModal("date")}>
               Add Date
             </button>
@@ -81,6 +97,34 @@ const TodoForm = () => {
               Add Description
             </button>
             <button type="submit">{isEdit ? "Edit Task" : "Add Task"}</button>
+          </div>
+        )}
+
+        {isPriorityDropdownVisible && (
+          <div className="priority-dropdown">
+            <ul>
+              <li onClick={() => handlePrioritySelect("Low")}>
+                <span
+                  className="priority-circle"
+                  style={{ backgroundColor: "green" }}
+                ></span>
+                Low
+              </li>
+              <li onClick={() => handlePrioritySelect("Medium")}>
+                <span
+                  className="priority-circle"
+                  style={{ backgroundColor: "orange" }}
+                ></span>
+                Medium
+              </li>
+              <li onClick={() => handlePrioritySelect("High")}>
+                <span
+                  className="priority-circle"
+                  style={{ backgroundColor: "red" }}
+                ></span>
+                High
+              </li>
+            </ul>
           </div>
         )}
       </form>
