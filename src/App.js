@@ -9,7 +9,6 @@ function App() {
 
   return (
     <TodoProvider>
-      <Navbar />
       <Navbar setFilterType={setFilterType} />
       <div className="App">
         <TodoList filterType={filterType} />

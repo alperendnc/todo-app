@@ -1,25 +1,13 @@
 import React from "react";
 import { TodoItem, TodoForm } from "./";
 import useTodos from "../hooks/useTodos";
-import {
-  filterPastTasks,
-  filterTodayTasks,
-  filterUpcomingTasks,
-} from "../hooks/filters";
+import { filterTasksByDate } from "../hooks/useFilters";
 
 export default function TodoList({ filterType }) {
   const { todos } = useTodos();
-
   const todoList = todos || [];
 
-  let filteredTodos = todoList;
-  if (filterType === "past") {
-    filteredTodos = filterPastTasks(todoList);
-  } else if (filterType === "today") {
-    filteredTodos = filterTodayTasks(todoList);
-  } else if (filterType === "upcoming") {
-    filteredTodos = filterUpcomingTasks(todoList);
-  }
+  const filteredTodos = filterTasksByDate(todoList, filterType);
 
   return (
     <div className="todo-container">
