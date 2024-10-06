@@ -35,6 +35,7 @@ const TodoItem = ({ todo }) => {
   const fullText = todo.title;
   const truncatedText =
     fullText.length > 30 ? fullText.slice(0, 30) + "..." : fullText;
+
   const toggleText = () => setIsExpanded(!isExpanded);
 
   const fullDescription = todo.description || "";
@@ -42,6 +43,7 @@ const TodoItem = ({ todo }) => {
     fullDescription.length > 30
       ? fullDescription.slice(0, 30) + "..."
       : fullDescription;
+
   const toggleDescription = () => setIsDescExpanded(!isDescExpanded);
 
   const priorityList = [
@@ -63,24 +65,38 @@ const TodoItem = ({ todo }) => {
         } ${priorityClass}`}
       >
         <span onClick={() => toggleTodo(todo.id)}>
-          {isExpanded ? fullText : truncatedText}
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <span>{isExpanded ? fullText : truncatedText}</span>
+            {fullText.length > 30 && (
+              <span
+                className="show-more"
+                onClick={toggleText}
+                style={{ marginLeft: "10px" }}
+              >
+                {isExpanded ? "Show less" : "Show more"}
+              </span>
+            )}
+          </div>
         </span>
-        {fullText.length > 30 && (
-          <span className="show-more" onClick={toggleText}>
-            {isExpanded ? "Show less" : "Show more"}
-          </span>
-        )}
 
         {todo.description && (
           <>
             <span className="todo-description">
-              {isDescExpanded ? fullDescription : truncatedDescription}
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <span>
+                  {isDescExpanded ? fullDescription : truncatedDescription}
+                </span>
+                {fullDescription.length > 30 && (
+                  <span
+                    className="show-more"
+                    onClick={toggleDescription}
+                    style={{ marginLeft: "10px" }}
+                  >
+                    {isDescExpanded ? "Show less" : "Show more"}
+                  </span>
+                )}
+              </div>
             </span>
-            {fullDescription.length > 30 && (
-              <span className="show-more" onClick={toggleDescription}>
-                {isDescExpanded ? "Show less" : "Show more"}
-              </span>
-            )}
           </>
         )}
 
