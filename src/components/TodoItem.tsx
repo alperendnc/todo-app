@@ -1,5 +1,5 @@
 import { useState } from "react";
-import useTodos from "../hooks/useTodos";
+import useTodos, { Todo } from "../hooks/useTodos";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEdit,
@@ -8,14 +8,18 @@ import {
   faCalendarAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
-const TodoItem = ({ todo }) => {
-  const { setIsEdit, setEditingTodo, toggleTodo, deleteTodo } = useTodos();
+interface TodoItemProps {
+  Todo: Todo;
+}
+
+const TodoItem = ({ Todo }: TodoItemProps) => {
+  const { toggleComplete, deleteTodo, startEditing } = useTodos();
   const [showPopup, setShowPopup] = useState(false);
   const [showDate, setShowDate] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isDescExpanded, setIsDescExpanded] = useState(false);
 
-  if (!todo) {
+  if (!Todo) {
     return null;
   }
 
@@ -29,8 +33,7 @@ const TodoItem = ({ todo }) => {
   };
 
   const handleEdit = () => {
-    setIsEdit(true);
-    setEditingTodo(todo);
+    startEditing(Todo); // Burada doğru şekilde 'startEditing' fonksiyonunu çağırdım
     setShowPopup(false);
   };
 
@@ -38,7 +41,7 @@ const TodoItem = ({ todo }) => {
     setShowDate(true);
   };
 
-  const fullText = todo.task;
+  const fullText = Todo.task;
   const truncatedText =
     fullText.length > 20 ? fullText.slice(0, 20) + "..." : fullText;
 
@@ -46,7 +49,7 @@ const TodoItem = ({ todo }) => {
     setIsExpanded(!isExpanded);
   };
 
-  const fullDescription = todo.description || "";
+  const fullDescription = Todo.description || "";
   const truncatedDescription =
     fullDescription.length > 20
       ? fullDescription.slice(0, 20) + "..."
@@ -60,10 +63,10 @@ const TodoItem = ({ todo }) => {
     <ul>
       <li
         className={`todo-item ${
-          todo.completed ? "completed" : "not-completed"
+          Todo.completed ? "completed" : "not-completed"
         }`}
       >
-        <span onClick={() => toggleTodo(todo.id)}>
+        <span onClick={() => toggleComplete(Todo.id)}>
           {isExpanded ? fullText : truncatedText}
         </span>
         {fullText.length > 20 && (
@@ -72,7 +75,7 @@ const TodoItem = ({ todo }) => {
           </span>
         )}
 
-        {todo.description && (
+        {Todo.description && (
           <>
             <span className="todo-description">
               {isDescExpanded ? fullDescription : truncatedDescription}
@@ -92,10 +95,10 @@ const TodoItem = ({ todo }) => {
           <button onClick={handleShowPopup}>
             <FontAwesomeIcon icon={faStickyNote} />
           </button>
-          <button onClick={() => handleEdit()}>
+          <button onClick={handleEdit}>
             <FontAwesomeIcon icon={faEdit} />
           </button>
-          <button onClick={() => deleteTodo(todo.id)}>
+          <button onClick={() => deleteTodo(Todo.id)}>
             <FontAwesomeIcon icon={faTrash} />
           </button>
         </div>
@@ -105,7 +108,7 @@ const TodoItem = ({ todo }) => {
         <div className="popup-overlay">
           <div className="popup-content">
             <h2>Note</h2>
-            <p>{todo.note || "No note available"}</p>
+            <p>{Todo.note || "No note available"}</p>
             <button onClick={handleClosePopup}>Close</button>
           </div>
         </div>
@@ -115,7 +118,7 @@ const TodoItem = ({ todo }) => {
         <div className="popup-overlay">
           <div className="popup-content">
             <h2>Date</h2>
-            <p>{todo.date || "No date available"}</p>
+            <p>{Todo.date || "No date available"}</p>
             <button onClick={handleClosePopup}>Close</button>
           </div>
         </div>

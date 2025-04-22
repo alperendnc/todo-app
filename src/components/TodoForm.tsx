@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import useTodos from "../hooks/useTodos";
+import useTodos, { Todo } from "../hooks/useTodos";
 import { v4 as uuidv4 } from "uuid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
@@ -10,7 +10,7 @@ import dayjs from "dayjs";
 const TodoForm = () => {
   const { addTodo, editingTodo, isEdit } = useTodos();
 
-  const defaultValues = {
+  const defaultValues: Todo = {
     id: "",
     task: "",
     description: "",
@@ -19,22 +19,21 @@ const TodoForm = () => {
     completed: false,
   };
 
-  const [task, setTask] = useState(defaultValues);
+  const [task, setTask] = useState<Todo>(defaultValues);
   const [showNoteInput, setShowNoteInput] = useState(false);
   const [showDateInput, setShowDateInput] = useState(false);
 
   useEffect(() => {
-    if (isEdit) {
+    if (isEdit && editingTodo) {
       setTask(editingTodo);
+      if (editingTodo.note) setShowNoteInput(true);
+      if (editingTodo.date) setShowDateInput(true);
     }
   }, [editingTodo, isEdit]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    let id = uuidv4();
-    if (isEdit) {
-      id = editingTodo.id;
-    }
+    const id = isEdit && editingTodo ? editingTodo.id : uuidv4();
     addTodo({ ...task, id });
     setTask(defaultValues);
     setShowNoteInput(false);
@@ -45,10 +44,13 @@ const TodoForm = () => {
     setShowNoteInput(!showNoteInput);
   };
 
-  const handleDateChange = (date) => {
-    setTask({ ...task, date: dayjs(date).format("YYYY-MM-DD") });
+  const handleDateChange = (date: Date | null) => {
+    if (date) {
+      setTask({ ...task, date: dayjs(date).format("YYYY-MM-DD") });
+    } else {
+      setTask({ ...task, date: "" });
+    }
   };
-
   return (
     <form className="todo-form" onSubmit={handleSubmit}>
       <div className="input-container">
@@ -57,6 +59,7 @@ const TodoForm = () => {
           placeholder="Enter task"
           value={task.task}
           onChange={(e) => setTask({ ...task, task: e.target.value })}
+          required
         />
         <FontAwesomeIcon
           icon={faCalendarAlt}
@@ -80,16 +83,20 @@ const TodoForm = () => {
           )
         )}
       </div>
+
       <input
         type="text"
         placeholder="Enter description"
         value={task.description}
         onChange={(e) => setTask({ ...task, description: e.target.value })}
       />
+
       <button type="submit">{isEdit ? "Edit Task" : "Add Task"}</button>
+
       <button type="button" onClick={handleAddNoteClick}>
         {showNoteInput ? "Hide Note" : "Add Note"}
       </button>
+
       {showNoteInput && (
         <div>
           <input

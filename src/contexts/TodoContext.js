@@ -1,65 +1,66 @@
-import React, { useState, useEffect, createContext } from "react";
+import { createContext, useContext, useState } from "react";
 
-const TodoContext = createContext();
+const TodosContext = createContext();
 
-export const TodoProvider = ({ children }) => {
+export const TodosProvider = ({ children }) => {
   const [todos, setTodos] = useState([]);
+  const [editingTodo, setEditingTodo] = useState(null);
   const [isEdit, setIsEdit] = useState(false);
-  const [editingTodo, setEditingTodo] = useState({});
 
-  useEffect(() => {
-    const storedTodos = JSON.parse(localStorage.getItem("todos"));
-
-    if (storedTodos) {
-      setTodos(storedTodos);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (todos.length > 0) {
-      localStorage.setItem("todos", JSON.stringify(todos));
-    } else {
-      localStorage.removeItem("todos");
-    }
-  }, [todos]);
-
-  const addTodo = (newTodo) => {
-    if (isEdit) {
-      const todoList = todos.filter((todo) => todo.id !== newTodo.id);
-      setTodos([...todoList, newTodo]);
-      setIsEdit(false);
-    } else {
-      setTodos([...todos, newTodo]);
-    }
+  const addTodo = (todo) => {
+    const newTodo = {
+      id: todo.id || Date.now(),
+      task: todo.task,
+      description: todo.description,
+      note: todo.note || "",
+      date: todo.date || "",
+      completed: todo.completed || false,
+    };
+    setTodos((prev) => [...prev, newTodo]);
   };
 
-  const deleteTodo = (id) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
-  };
-
-  const toggleTodo = (id) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
+  const deleteTodo = (id) =>
+    setTodos((prev) => prev.filter((t) => t.id !== id));
+  const toggleComplete = (id) =>
+    setTodos((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
     );
+  const startEditing = (todo) => {
+    setEditingTodo(todo);
+    setIsEdit(true);
   };
+  const updateTodo = (id, newTask) => {
+    setTodos((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, ...newTask } : t))
+    );
+    setEditingTodo(null);
+    setIsEdit(false);
+  };
+  const addNote = (id, note) =>
+    setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, note } : t)));
+  const deleteCompleted = () =>
+    setTodos((prev) => prev.filter((t) => !t.completed));
+  const deleteAll = () => setTodos([]);
+
   return (
-    <TodoContext.Provider
+    <TodosContext.Provider
       value={{
         todos,
         addTodo,
         deleteTodo,
-        toggleTodo,
-        isEdit,
-        setIsEdit,
+        toggleComplete,
+        startEditing,
+        updateTodo,
         editingTodo,
-        setEditingTodo,
+        isEdit,
+        addNote,
+        deleteCompleted,
+        deleteAll,
       }}
     >
       {children}
-    </TodoContext.Provider>
+    </TodosContext.Provider>
   );
 };
 
-export default TodoContext;
+export const useTodos = () => useContext(TodosContext);
