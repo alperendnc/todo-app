@@ -1,56 +1,80 @@
 # To-Do List Application
 
-This project is a simple and stylish To-Do List application that helps you keep track of your tasks. It is developed using React and includes essential features such as adding, editing, completing, and deleting tasks.
+This project is a comprehensive and stylish To-Do List application designed to help you manage your tasks, notes, and schedule effectively. Developed using React, it offers a range of features to enhance productivity and organization.
 
 ## Features
 
-- **Add Task:** Create a new task and add it to the list.
-- **Edit Task:** Edit an existing task.
-- **Complete Task:** Mark your tasks as completed.
-- **Delete Task:** Delete a single task or all completed tasks.
-- **Filter Tasks:** View your tasks by switching between all tasks, completed tasks, or to-do tasks.
-- **Delete All Tasks:** Clear all tasks in the list.
+- **Task Management:** Easily add, edit, complete, and delete tasks to stay organized and on top of your to-do list.
+- **Notes Management:** Quickly add, edit, delete, and search notes with the ability to mark favorites for easy access.
+- **Calendar Integration:** A dedicated calendar page to view and manage tasks by date, making it easier to track and plan your schedule. Tasks can also be added directly from the calendar.
+- **User Authentication:** Sign up and log in with different accounts to personalize your experience and securely manage your data.
+- **Responsive Design:** Fully responsive design ensures a seamless experience on both mobile and desktop devices.
 
 ## Project Structure
 
-- **`App.js`:** The main component of the application. Manages all tasks and invokes other components.
-- **`TodoForm.js`:** The form component where users can add new tasks or edit existing ones.
-- **`TodoList.js`:** The component that manages the task list and task-related actions.
+- **`App.tsx`:** The main component of the application. Manages routing and global providers.
+- **`TodoForm.tsx`:** The form component where users can add new tasks or edit existing ones.
+- **`TodoList.tsx`:** The component that manages the task list and task-related actions.
+- **`NotesPage/page.tsx`:** The page for managing notes with features like adding, editing, and favoriting notes.
+- **`CalendarPage/page.tsx`:** The page for calendar-related functionalities, including adding tasks directly from the calendar.
+- **`Navbar` and `Sidebar`:** Navigation components for the application.
+- **`MaterialUIComponents.tsx`:** Centralized file for importing Material-UI components.
+- **`themes/index.tsx`:** Theme configuration for Material-UI.
 
-## Usage
+## Cloning the Repository
 
-1. To add a new task, write the task details in the input box and click the **`Add`** button.
-2. To edit an existing task, click the edit icon and modify the task.
-3. To complete a task, click the complete icon.
-4. To delete a task, click the delete icon.
-5. Use the filter buttons to view your tasks (All tasks, Completed tasks, To-Do tasks).
-6. Click the **`Delete Completed Tasks`** button to delete all completed tasks.
-7. Click the **`Delete All Tasks`** button to clear all tasks in the list.
+To use this project, first clone the repository and pull the latest changes:
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   ```
+2. Navigate to the project directory:
+   ```bash
+   cd todo-list
+   ```
+3. Pull the latest changes:
+   ```bash
+   git pull origin <branch-name>
+   ```
 
 ## Installation
 
 To run this project locally, follow these steps:
 
-1.  Navigate to the project directory:
-    ```bash
-    cd todo-list
-    ```
-2.  If you are using npm open terminal and write this sentence:
-    ```bash
-    npm install
-    ```
-3.  Or If you are using yarn
-    ```bash
-    yarn install
-    ```
+1. Navigate to the project directory:
+   ```bash
+   cd todo-list
+   ```
+2. Install dependencies using Yarn:
+   ```bash
+   yarn install
+   ```
 
 ## Running the Project
 
-1.  If you are using npm open terminal and write this sentence:
-    ```bash
-    npm run
-    ```
-2.  Or If you are using yarn
-    ```bash
-    yarn run
-    ```
+1. Start the development server:
+   ```bash
+   yarn start
+   ```
+
+## Build for Production
+
+1. Create a production build:
+   ```bash
+   yarn build
+   ```
+
+## Testing
+
+1. Run tests:
+   ```bash
+   yarn test
+   ```
+
+## Deployment
+
+1. Deploy the application:
+   ```bash
+   yarn deploy
+   ```
