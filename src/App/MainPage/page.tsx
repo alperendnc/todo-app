@@ -28,7 +28,7 @@ const MainPage = () => {
           sx={{ fontSize: 60, color: theme.palette.primary.main }}
         />
       ),
-      description: "Organize tasks with priority levels ",
+      description: "Organize tasks effectively",
       route: "/todos",
       color: theme.palette.primary.light,
     },

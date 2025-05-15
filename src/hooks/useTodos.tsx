@@ -7,6 +7,7 @@ export interface Todo {
   note?: string;
   date?: string;
   completed: boolean;
+  priority?: string;
 }
 
 const useTodos = () => {
@@ -19,9 +20,9 @@ const useTodos = () => {
       id: todo.id || Date.now().toString(),
       task: todo.task,
       description: todo.description,
-      note: todo.note || "",
       date: todo.date || "",
       completed: todo.completed || false,
+      priority: todo.priority || "",
     };
     setTodos((prev) => [...prev, newTodo]);
   };
@@ -43,9 +44,25 @@ const useTodos = () => {
     setIsEdit(true);
   };
 
-  const updateTodo = (id: string, newText: string) => {
+  const updateTodo = (
+    id: string,
+    newTask: string,
+    newDescription: string,
+    newDate: string,
+    newPriority: string
+  ) => {
     setTodos((prev) =>
-      prev.map((todo) => (todo.id === id ? { ...todo, task: newText } : todo))
+      prev.map((todo) =>
+        todo.id === id
+          ? {
+              ...todo,
+              task: newTask,
+              description: newDescription,
+              date: newDate,
+              priority: newPriority,
+            }
+          : todo
+      )
     );
     setEditingTodo(null);
     setIsEdit(false);
