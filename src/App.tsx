@@ -18,7 +18,7 @@ const App: React.FC = () => {
         maxSnack={3}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Router basename="/todo-list">
+        <Router basename="/todo-app">
           <Box sx={{ display: "flex" }}>
             <Sidebar />
 
