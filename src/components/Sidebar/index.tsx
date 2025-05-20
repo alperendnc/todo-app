@@ -23,25 +23,25 @@ const Sidebar = () => {
   const features = [
     {
       title: "Main Page",
-      description: "Ana sayfaya dönün ve tüm özelliklere erişin.",
+      description: "Return to the main page and access all features.",
       route: "/",
       icon: <MenuIcon sx={{ color: "white" }} />,
     },
     {
       title: "Todo",
-      description: "Yapılacak görevlerinizi yönetin ve düzenli kalın.",
+      description: "Manage your tasks and stay organized.",
       route: "/todos",
       icon: <CheckCircleIcon sx={{ color: "white" }} />,
     },
     {
       title: "Notes",
-      description: "Notlarınızı saklayın ve istediğiniz zaman erişin.",
+      description: "Store your notes and access them anytime.",
       route: "/notes",
       icon: <NoteIcon sx={{ color: "white" }} />,
     },
     {
       title: "Calendar",
-      description: "Tarihlere göre plan yapın ve hatırlatıcılar oluşturun.",
+      description: "Plan by dates and create reminders.",
       route: "/calendar",
       icon: <CalendarTodayIcon sx={{ color: "white" }} />,
     },
