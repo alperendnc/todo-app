@@ -180,7 +180,7 @@ const TodoListPage = () => {
         displayEmpty
       >
         <MenuItem value="" disabled>
-          <b>Priority Seçiniz</b>
+          <b>Choose priorty</b>
         </MenuItem>
         <MenuItem value="Low">
           <Chip

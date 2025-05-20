@@ -1,12 +1,10 @@
+"use client";
+
 import React from "react";
+import ContinuousCalendar from "src/components/Calendar/ContinuousCalendar";
 
 const CalendarPage: React.FC = () => {
-  return (
-    <div>
-      <h1>Takvim Sayfası</h1>
-      <p>Buraya takvim bileşeni veya içerik gelecek.</p>
-    </div>
-  );
+  return <ContinuousCalendar />;
 };
 
 export default CalendarPage;

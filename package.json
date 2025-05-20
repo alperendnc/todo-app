@@ -1,6 +1,6 @@
 {
-  "name": "todolist",
-  "homepage": "https://alperendnc.github.io/todo-list",
+  "name": "todoapp",
+  "homepage": "https://alperendnc.github.io/todo-app",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
