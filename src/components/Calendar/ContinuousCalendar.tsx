@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Box,
@@ -7,9 +5,13 @@ import {
   MenuItem,
   Select,
   Typography,
-  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
 } from "@mui/material";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
+import InfoIcon from "@mui/icons-material/Info";
 
 const monthNames = [
   "January",
@@ -26,6 +28,13 @@ const monthNames = [
   "December",
 ];
 
+interface CalendarEvent {
+  day: number;
+  month: number;
+  year: number;
+  title: string;
+}
+
 interface ContinuousCalendarProps {
   onClick?: (_day: number, _month: number, _year: number) => void;
 }
@@ -37,6 +46,17 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
   const [selectedMonth, setSelectedMonth] = useState<number>(0);
   const [isUserSelectingMonth, setIsUserSelectingMonth] = useState(false);
 
+  const [selectedDay, setSelectedDay] = useState<{
+    day: number;
+    month: number;
+    year: number;
+  } | null>(null);
+  const [eventDialogOpen, setEventDialogOpen] = useState(false);
+  const [eventDetailOpen, setEventDetailOpen] = useState(false);
+  const [eventTitle, setEventTitle] = useState("");
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [activeEvent, setActiveEvent] = useState<CalendarEvent | null>(null);
+
   const scrollToDay = (monthIndex: number, dayIndex: number) => {
     const targetDayIndex = dayRefs.current.findIndex(
       (ref) =>
@@ -44,16 +64,13 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
         ref.getAttribute("data-month") === `${monthIndex}` &&
         ref.getAttribute("data-day") === `${dayIndex}`
     );
-
     const targetElement = dayRefs.current[targetDayIndex];
-
     if (targetDayIndex !== -1 && targetElement) {
       const container = document.getElementById("calendar-container");
       const elementRect = targetElement.getBoundingClientRect();
       const offsetFactor = window.matchMedia("(min-width: 1536px)").matches
         ? 3
         : 2.5;
-
       if (container) {
         const containerRect = container.getBoundingClientRect();
         const offset =
@@ -61,7 +78,6 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
           containerRect.top -
           containerRect.height / offsetFactor +
           elementRect.height / 2;
-
         container.scrollTo({
           top: container.scrollTop + offset,
           behavior: "smooth",
@@ -82,7 +98,7 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
       (ref) =>
         ref &&
         ref.getAttribute("data-month") === `${selectedMonth}` &&
-        ref.getAttribute("data-day") === "1"
+        ref.getAttribute("data-day") === `1`
     );
     const targetElement = dayRefs.current[firstDayIndex];
     if (targetElement) {
@@ -115,6 +131,11 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
 
   const handleDayClick = React.useCallback(
     (day: number, month: number, year: number) => {
+      if (month >= 0) {
+        setSelectedDay({ day, month, year });
+      } else {
+        setSelectedDay(null);
+      }
       if (onClick) {
         if (month < 0) {
           onClick(day, 11, year - 1);
@@ -126,24 +147,38 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
     [onClick]
   );
 
+  const handleAddEvent = () => {
+    if (selectedDay && eventTitle.trim()) {
+      setEvents((prev) => [
+        ...prev,
+        {
+          day: selectedDay.day,
+          month: selectedDay.month,
+          year: selectedDay.year,
+          title: eventTitle.trim(),
+        },
+      ]);
+      setEventDialogOpen(false);
+      setEventTitle("");
+      setSelectedDay(null);
+    }
+  };
+
   const generateCalendar = useMemo(() => {
     const daysInYear = (): { month: number; day: number }[] => {
       const days = [];
       const startDayOfWeek = new Date(year, 0, 1).getDay();
-
       if (startDayOfWeek < 6) {
         for (let i = 0; i < startDayOfWeek; i++) {
           days.push({ month: -1, day: 32 - startDayOfWeek + i });
         }
       }
-
       for (let month = 0; month < 12; month++) {
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         for (let day = 1; day <= daysInMonth; day++) {
           days.push({ month, day });
         }
       }
-
       const lastWeekDayCount = days.length % 7;
       if (lastWeekDayCount > 0) {
         const extraDaysNeeded = 7 - lastWeekDayCount;
@@ -151,13 +186,11 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
           days.push({ month: 0, day });
         }
       }
-
       return days;
     };
 
     const calendarDays = daysInYear();
     const calendarWeeks = [];
-
     for (let i = 0; i < calendarDays.length; i += 7) {
       calendarWeeks.push(calendarDays.slice(i, i + 7));
     }
@@ -172,6 +205,15 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
             today.getDate() === day &&
             today.getMonth() === month &&
             today.getFullYear() === year;
+          const isSelected =
+            selectedDay &&
+            selectedDay.day === day &&
+            selectedDay.month === month &&
+            selectedDay.year === year;
+
+          const dayEvents = events.filter(
+            (e) => e.day === day && e.month === month && e.year === year
+          );
 
           return (
             <Box
@@ -181,16 +223,33 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
               }}
               data-month={month}
               data-day={day}
-              onClick={() => handleDayClick(day, month, year)}
+              onClick={() => {
+                if (dayEvents.length > 0) {
+                  setActiveEvent(dayEvents[0]);
+                  setEventDetailOpen(true);
+                } else {
+                  handleDayClick(day, month, year);
+                }
+              }}
               sx={{
                 position: "relative",
                 aspectRatio: "1 / 1",
                 width: "100%",
                 flexGrow: 1,
-                border: "1px solid #ccc",
+                border: isSelected ? "2px solid #1976d2" : "1px solid #ccc",
                 borderRadius: 2,
-                cursor: "pointer",
+                cursor: month >= 0 ? "pointer" : "default",
                 m: 0.5,
+                transition:
+                  "box-shadow 0.2s, border-color 0.2s, background 0.2s",
+                background: isSelected ? "#e3f2fd" : "transparent",
+                "&:hover": {
+                  boxShadow: "0 0 0 2px #90caf9",
+                  borderColor: "#90caf9",
+                  background: "#bbdefb",
+                  zIndex: 2,
+                },
+                opacity: month < 0 ? 0.3 : 1,
               }}
             >
               <Typography
@@ -226,24 +285,39 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
                   {monthNames[month]}
                 </Typography>
               )}
-              <IconButton
-                size="small"
-                sx={{
-                  position: "absolute",
-                  top: 4,
-                  right: 4,
-                  opacity: 0.5,
-                  "&:hover": { opacity: 1 },
-                }}
-              >
-                <AddCircleIcon fontSize="small" color="primary" />
-              </IconButton>
+              {dayEvents.length > 0 && (
+                <Box
+                  sx={{
+                    position: "absolute",
+                    bottom: 8,
+                    right: 6,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    pointerEvents: "none",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 20,
+                      height: 20,
+                      borderRadius: 4,
+                      background: "#1976d2",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <InfoIcon sx={{ color: "#fff", fontSize: 14 }} />
+                  </Box>
+                </Box>
+              )}
             </Box>
           );
         })}
       </Box>
     ));
-  }, [year, handleDayClick, today]);
+  }, [year, today, selectedDay, events, handleDayClick]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -311,15 +385,116 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
             Today
           </Button>
           <Button
+            type="button"
+            disabled={!selectedDay}
             variant="contained"
-            size="small"
-            sx={{ textTransform: "none" }}
+            style={{
+              opacity: !selectedDay ? 0.5 : 1,
+              cursor: !selectedDay ? "not-allowed" : "pointer",
+            }}
+            onClick={() => setEventDialogOpen(true)}
           >
             + Add Event
           </Button>
         </Box>
       </Box>
       <Box mt={2}>{generateCalendar}</Box>
+      <Dialog open={eventDialogOpen} onClose={() => setEventDialogOpen(false)}>
+        <DialogTitle>Add Event</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Event "
+            fullWidth
+            value={eventTitle}
+            onChange={(e) => setEventTitle(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setEventDialogOpen(false)}>Cancel</Button>
+          <Button
+            onClick={handleAddEvent}
+            variant="contained"
+            disabled={!eventTitle.trim()}
+          >
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={eventDetailOpen} onClose={() => setEventDetailOpen(false)}>
+        <DialogTitle>Event Details</DialogTitle>
+        <DialogContent>
+          <Box
+            sx={{
+              width: 200,
+              height: 150,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "#f5f5f5",
+              borderRadius: 2,
+              textAlign: "center",
+              gap: 1,
+              wordBreak: "break-word",
+            }}
+          >
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{
+                fontSize: "1rem",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+              }}
+            >
+              {activeEvent?.title}
+            </Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                fontSize: "0.85rem",
+                textAlign: "center",
+              }}
+            >
+              {activeEvent
+                ? `${activeEvent.day} ${monthNames[activeEvent.month]} ${
+                    activeEvent.year
+                  }`
+                : ""}
+            </Typography>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => {
+                setEvents((prev) =>
+                  prev.filter(
+                    (e) =>
+                      !(
+                        e.day === activeEvent?.day &&
+                        e.month === activeEvent?.month &&
+                        e.year === activeEvent?.year
+                      )
+                  )
+                );
+                setActiveEvent(null);
+                setEventDetailOpen(false);
+              }}
+              sx={{ fontSize: "0.75rem", padding: "4px 8px" }}
+            >
+              Delete Event
+            </Button>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setEventDetailOpen(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
