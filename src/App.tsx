@@ -7,6 +7,7 @@ import Sidebar from "./components/Sidebar";
 import MainPage from "./App/MainPage/page";
 import TodoListPage from "./App/TodoListPage/page";
 import NotesPage from "./App/NotesPage/page";
+import SettingsPage from "./App/SettingsPage/page";
 import CalendarPage from "./App/CalendarPage/page";
 import SignUp from "./components/modals/SignUpModal";
 import Login from "./components/modals/LoginModal/Sign";
@@ -48,6 +49,7 @@ const App: React.FC = () => {
                 <Route path="/todos" element={<TodoListPage />} />
                 <Route path="/notes" element={<NotesPage />} />
                 <Route path="/calendar" element={<CalendarPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
               </Routes>
             </Box>
           </Box>

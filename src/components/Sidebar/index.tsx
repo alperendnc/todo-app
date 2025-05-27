@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import SettingsIcon from "@mui/icons-material/Settings";
 import NoteIcon from "@mui/icons-material/Note";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { useNavigate } from "react-router-dom";
@@ -72,16 +73,19 @@ const Sidebar = () => {
             boxSizing: "border-box",
             backgroundColor: "#212121",
             color: "white",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
           },
         }}
       >
-        <Toolbar
-          sx={{
-            backgroundColor: "#212121",
-            color: "white",
-          }}
-        ></Toolbar>
         <Box sx={{ overflow: "auto" }}>
+          <Toolbar
+            sx={{
+              backgroundColor: "#212121",
+              color: "white",
+            }}
+          ></Toolbar>
           <List>
             {features.map((feature) => (
               <ListItem key={feature.title} disablePadding>
@@ -108,6 +112,34 @@ const Sidebar = () => {
                 </ListItemButton>
               </ListItem>
             ))}
+          </List>
+        </Box>
+        {/* Settings en altta */}
+        <Box>
+          <List>
+            <ListItem disablePadding>
+              <ListItemButton
+                onClick={() => {
+                  navigate("/settings");
+                  setOpen(false);
+                }}
+                sx={{
+                  "&:hover": {
+                    backgroundColor: "#424242",
+                  },
+                }}
+              >
+                <ListItemIcon sx={{ color: "white" }}>
+                  <SettingsIcon />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Settings"
+                  secondary="Adjust your preferences"
+                  primaryTypographyProps={{ color: "white" }}
+                  secondaryTypographyProps={{ color: "gray" }}
+                />
+              </ListItemButton>
+            </ListItem>
           </List>
         </Box>
       </Drawer>
