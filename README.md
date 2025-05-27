@@ -13,7 +13,6 @@ This project is a comprehensive and stylish To-Do List application designed to h
 ## Project Structure
 
 - **`App.tsx`:** The main component of the application. Manages routing and global providers.
-- **`TodoForm.tsx`:** The form component where users can add new tasks or edit existing ones.
 - **`TodoList.tsx`:** The component that manages the task list and task-related actions.
 - **`NotesPage/page.tsx`:** The page for managing notes with features like adding, editing, and favoriting notes.
 - **`CalendarPage/page.tsx`:** The page for calendar-related functionalities, including adding tasks directly from the calendar.
@@ -47,9 +46,27 @@ To run this project locally, follow these steps:
    cd todo-list
    ```
 2. Install dependencies using Yarn:
+
    ```bash
    yarn install
    ```
+
+## Set up Firebase:
+
+1. Create a new Firebase project on the Firebase Console.
+2. Add a new web app to your Firebase project.
+3. Copy the Firebase configuration and add it to your project.
+
+## Create a .env.local file in the root directory and add your Firebase configuration:
+
+```bash
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+```
 
 ## Running the Project
 
