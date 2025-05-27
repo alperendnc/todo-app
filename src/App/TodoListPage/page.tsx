@@ -144,7 +144,18 @@ const TodoListPage = () => {
         multiline
       />
 
-      <Box sx={{ display: "flex", alignItems: "center" }}>
+      <Box
+        sx={{
+          display: "flex",
+          gap: 2,
+          alignItems: "center",
+          "& > *": {
+            flex: 1,
+            minWidth: 0,
+            height: 56,
+          },
+        }}
+      >
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <MuiDatePicker
             label="Select a date"
@@ -158,49 +169,59 @@ const TodoListPage = () => {
             slotProps={{
               textField: {
                 fullWidth: true,
-                sx: { minWidth: 0 },
+                sx: { minWidth: 0, height: 56 },
                 inputProps: {
                   readOnly: true,
-                  style: { cursor: "pointer" },
+                  style: { cursor: "pointer", height: 56 },
                 },
               },
             }}
-            sx={{ flex: 1 }}
+            sx={{ flex: 1, minWidth: 0, height: 56 }}
           />
         </LocalizationProvider>
+        <Select
+          value={task.priority || "Low"}
+          onChange={(e) =>
+            setTask({ ...task, priority: e.target.value as string })
+          }
+          fullWidth
+          sx={{
+            flex: 1,
+            minWidth: 0,
+            height: 56,
+            display: "flex",
+            alignItems: "center",
+          }}
+          displayEmpty
+          MenuProps={{
+            PaperProps: {
+              style: { maxHeight: 200 },
+            },
+          }}
+        >
+          <MenuItem value="" disabled>
+            <b>Choose priorty</b>
+          </MenuItem>
+          <MenuItem value="Low">
+            <Chip
+              label="Low"
+              sx={{ backgroundColor: "#81c784", color: "white" }}
+            />
+          </MenuItem>
+          <MenuItem value="Medium">
+            <Chip
+              label="Medium"
+              sx={{ backgroundColor: "#ffd54f", color: "black" }}
+            />
+          </MenuItem>
+          <MenuItem value="High">
+            <Chip
+              label="High"
+              sx={{ backgroundColor: "#e57373", color: "white" }}
+            />
+          </MenuItem>
+        </Select>
       </Box>
-
-      <Select
-        value={task.priority || "Low"}
-        onChange={(e) =>
-          setTask({ ...task, priority: e.target.value as string })
-        }
-        fullWidth
-        sx={{ mb: 1 }}
-        displayEmpty
-      >
-        <MenuItem value="" disabled>
-          <b>Choose priorty</b>
-        </MenuItem>
-        <MenuItem value="Low">
-          <Chip
-            label="Low"
-            sx={{ backgroundColor: "#81c784", color: "white" }}
-          />
-        </MenuItem>
-        <MenuItem value="Medium">
-          <Chip
-            label="Medium"
-            sx={{ backgroundColor: "#ffd54f", color: "black" }}
-          />
-        </MenuItem>
-        <MenuItem value="High">
-          <Chip
-            label="High"
-            sx={{ backgroundColor: "#e57373", color: "white" }}
-          />
-        </MenuItem>
-      </Select>
 
       <Button variant="contained" type="submit">
         {isEdit ? "Edit Task" : "Add Task"}
