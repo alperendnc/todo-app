@@ -1,9 +1,20 @@
 import React from "react";
 import { AppBar, Toolbar, Button, Box, Typography } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "src/contexts/UseAuth";
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
+  const { currentUser, logOut } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logOut();
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
 
   return (
     <AppBar
@@ -27,36 +38,57 @@ const Navbar: React.FC = () => {
         >
           Todo App
         </Typography>
+
         <Box sx={{ marginLeft: "auto" }}>
-          <Button
-            color="inherit"
-            component={Link}
-            to="/signup"
-            sx={{
-              marginRight: 1,
-              "&:hover": {
-                backgroundColor: "#424242",
-              },
-            }}
-          >
-            Sign Up
-          </Button>
-          <Button
-            color="inherit"
-            component={Link}
-            to="/login"
-            variant="outlined"
-            sx={{
-              borderColor: "white",
-              color: "white",
-              "&:hover": {
-                backgroundColor: "#424242",
-                borderColor: "#ffffff",
-              },
-            }}
-          >
-            Login
-          </Button>
+          {!currentUser ? (
+            <>
+              <Button
+                color="inherit"
+                component={Link}
+                to="/SignUp"
+                sx={{
+                  marginRight: 1,
+                  "&:hover": {
+                    backgroundColor: "#424242",
+                  },
+                }}
+              >
+                Sign Up
+              </Button>
+              <Button
+                color="inherit"
+                component={Link}
+                to="/logIn"
+                variant="outlined"
+                sx={{
+                  borderColor: "white",
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: "#424242",
+                    borderColor: "#ffffff",
+                  },
+                }}
+              >
+                Login
+              </Button>
+            </>
+          ) : (
+            <Button
+              color="inherit"
+              onClick={handleLogout}
+              variant="outlined"
+              sx={{
+                borderColor: "white",
+                color: "white",
+                "&:hover": {
+                  backgroundColor: "#424242",
+                  borderColor: "#ffffff",
+                },
+              }}
+            >
+              Logout
+            </Button>
+          )}
         </Box>
       </Toolbar>
     </AppBar>
