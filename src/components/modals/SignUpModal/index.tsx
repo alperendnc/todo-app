@@ -35,13 +35,13 @@ const SignUp: React.FC = () => {
     e.preventDefault();
     try {
       await signUp(email, password);
-      showSnackbar("Kayıt başarılı!", "success");
+      showSnackbar("Sign up successful!", "success");
       setTimeout(() => navigate("/"), 1500);
     } catch (err: unknown) {
       if (err instanceof Error) {
         showSnackbar(err.message, "error");
       } else {
-        showSnackbar("Bilinmeyen bir hata oluştu.", "error");
+        showSnackbar("An unknown error occurred.", "error");
       }
     }
   };

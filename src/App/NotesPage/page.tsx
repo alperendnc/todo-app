@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useAuth, Note } from "src/contexts/UseAuth";
 import {
   Box,
   Typography,
@@ -15,35 +16,34 @@ import {
   Snackbar,
   Fab,
 } from "@mui/material";
-import { Favorite, FavoriteBorder, Edit, Delete } from "@mui/icons-material";
-import MuiAlert from "@mui/material/Alert";
-import AddIcon from "@mui/icons-material/Add";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import SearchIcon from "@mui/icons-material/Search";
-import CloseIcon from "@mui/icons-material/Close";
 import {
-  addItem,
-  deleteItem,
-  updateItem,
-  toggleItemField,
-} from "../../contexts/TodoContext";
+  Favorite,
+  FavoriteBorder,
+  Edit,
+  Delete,
+  Add as AddIcon,
+  Favorite as FavoriteIcon,
+  Search as SearchIcon,
+  Close as CloseIcon,
+} from "@mui/icons-material";
+import MuiAlert from "@mui/material/Alert";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "src/config.js";
 
-interface Note {
-  id: number;
-  title: string;
-  content: string;
-  favorite: boolean;
-}
+// Note type is now imported from useAuth context
 
 const NotesPage: React.FC = () => {
+  const { currentUser, addNote, updateNote, deleteNote, getNotes } = useAuth();
+
   const [notes, setNotes] = useState<Note[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [noteDialog, setNoteDialog] = useState(false);
   const [newNote, setNewNote] = useState<Note>({
-    id: Date.now(),
+    id: "",
     title: "",
     content: "",
     favorite: false,
+    userId: "",
   });
   const [selectedNoteIndex, setSelectedNoteIndex] = useState<number | null>(
     null
@@ -51,14 +51,32 @@ const NotesPage: React.FC = () => {
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
+    severity: "success" as "success" | "error" | "info" | "warning",
   });
   const [filter, setFilter] = useState<string>("all");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const fetchNotes = async () => {
+    if (!currentUser) return;
+    const notesData = await getNotes();
+    setNotes(notesData);
+  };
+
+  useEffect(() => {
+    fetchNotes();
+    // eslint-disable-next-line
+  }, [currentUser]);
+
   const handleOpenAddDialog = () => {
     setSelectedNoteIndex(null);
-    setNewNote({ id: Date.now(), title: "", content: "", favorite: false });
+    setNewNote({
+      id: "",
+      title: "",
+      content: "",
+      favorite: false,
+      userId: currentUser?.uid || "",
+    });
     setDialogOpen(true);
   };
 
@@ -67,31 +85,55 @@ const NotesPage: React.FC = () => {
     setNoteDialog(false);
   };
 
-  const handleSaveNote = () => {
+  const handleSaveNote = async () => {
+    if (!currentUser) {
+      setSnackbar({
+        open: true,
+        message: "Login first!",
+        severity: "error",
+      });
+      return;
+    }
     if (selectedNoteIndex !== null) {
-      updateItem(notes, setNotes, notes[selectedNoteIndex].id, newNote);
-      setSnackbar({ open: true, message: "Note updated!" });
+      await updateNote(newNote);
+      setSnackbar({
+        open: true,
+        message: "Note updated!",
+        severity: "success",
+      });
     } else {
-      addItem(notes, setNotes, newNote);
-      setSnackbar({ open: true, message: "Note added!" });
+      await addNote(newNote.title, newNote.content);
+      setSnackbar({
+        open: true,
+        message: "Note added!",
+        severity: "success",
+      });
     }
     setDialogOpen(false);
+    fetchNotes();
   };
 
-  const handleDelete = (id: number) => {
-    deleteItem(notes, setNotes, id);
-    setSnackbar({ open: true, message: "Note deleted!" });
-  };
-
-  const handleFavorite = (id: number) => {
-    toggleItemField(notes, setNotes, id, "favorite");
-    const updatedNote = notes.find((note) => note.id === id);
+  const handleDelete = async (id: string) => {
+    await deleteNote(id);
     setSnackbar({
       open: true,
-      message: updatedNote?.favorite
-        ? "Added to favorites"
-        : "Removed from favorites",
+      message: "Note deleted!",
+      severity: "success",
     });
+    fetchNotes();
+  };
+
+  const handleFavorite = async (id: string) => {
+    const note = notes.find((n) => n.id === id);
+    if (!note) return;
+    const noteRef = doc(db, "notes", id);
+    await updateDoc(noteRef, { favorite: !note.favorite });
+    setSnackbar({
+      open: true,
+      message: !note.favorite ? "Added to favorites" : "Removed from favorites",
+      severity: "info",
+    });
+    fetchNotes();
   };
 
   const handleViewNote = (index: number) => {
@@ -121,7 +163,7 @@ const NotesPage: React.FC = () => {
 
       <Grid container spacing={3}>
         {filteredNotes.map((note, index) => (
-          <Grid key={index}>
+          <Grid key={note.id}>
             <Card
               sx={{
                 backgroundColor: "#ffffff",
@@ -166,7 +208,7 @@ const NotesPage: React.FC = () => {
                 <IconButton
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleFavorite(note.id);
+                    handleFavorite(note.id ?? "");
                   }}
                   sx={{ color: "#000000" }}
                 >
@@ -189,7 +231,7 @@ const NotesPage: React.FC = () => {
                   <IconButton
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleDelete(note.id);
+                      handleDelete(note.id ?? "");
                     }}
                     sx={{ color: "#000000" }}
                   >
@@ -202,6 +244,7 @@ const NotesPage: React.FC = () => {
         ))}
       </Grid>
 
+      {/* Add/Edit Note Dialog */}
       <Dialog
         open={dialogOpen}
         onClose={handleCloseDialog}
@@ -242,6 +285,7 @@ const NotesPage: React.FC = () => {
         </DialogActions>
       </Dialog>
 
+      {/* View Note Dialog */}
       <Dialog
         open={noteDialog}
         onClose={handleCloseDialog}
@@ -262,6 +306,7 @@ const NotesPage: React.FC = () => {
         </DialogActions>
       </Dialog>
 
+      {/* Snackbar */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={2500}
@@ -271,13 +316,14 @@ const NotesPage: React.FC = () => {
         <MuiAlert
           elevation={6}
           variant="filled"
-          severity="success"
+          severity={snackbar.severity}
           onClose={() => setSnackbar({ ...snackbar, open: false })}
         >
           {snackbar.message}
         </MuiAlert>
       </Snackbar>
 
+      {/* Floating Buttons */}
       <Box
         sx={{
           position: "fixed",
@@ -301,6 +347,7 @@ const NotesPage: React.FC = () => {
         </Fab>
       </Box>
 
+      {/* Search Box */}
       {searchOpen && (
         <Box
           sx={{

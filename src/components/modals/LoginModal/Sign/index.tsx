@@ -35,7 +35,7 @@ export default function Login() {
     e.preventDefault();
     try {
       await logIn(email, password);
-      showSnackbar("Giriş başarılı!", "success");
+      showSnackbar("Login successful!", "success");
       setTimeout(() => navigate("/"), 1500);
     } catch (err) {
       const error = err as Error;
