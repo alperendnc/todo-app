@@ -30,8 +30,6 @@ import MuiAlert from "@mui/material/Alert";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "src/config.js";
 
-// Note type is now imported from useAuth context
-
 const NotesPage: React.FC = () => {
   const { currentUser, addNote, updateNote, deleteNote, getNotes } = useAuth();
 
@@ -244,7 +242,6 @@ const NotesPage: React.FC = () => {
         ))}
       </Grid>
 
-      {/* Add/Edit Note Dialog */}
       <Dialog
         open={dialogOpen}
         onClose={handleCloseDialog}
@@ -285,7 +282,6 @@ const NotesPage: React.FC = () => {
         </DialogActions>
       </Dialog>
 
-      {/* View Note Dialog */}
       <Dialog
         open={noteDialog}
         onClose={handleCloseDialog}
@@ -306,7 +302,6 @@ const NotesPage: React.FC = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={2500}
@@ -323,7 +318,6 @@ const NotesPage: React.FC = () => {
         </MuiAlert>
       </Snackbar>
 
-      {/* Floating Buttons */}
       <Box
         sx={{
           position: "fixed",
@@ -347,7 +341,6 @@ const NotesPage: React.FC = () => {
         </Fab>
       </Box>
 
-      {/* Search Box */}
       {searchOpen && (
         <Box
           sx={{
