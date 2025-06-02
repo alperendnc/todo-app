@@ -7,11 +7,14 @@ import {
   Typography,
   Dialog,
   DialogTitle,
+  Snackbar,
   DialogContent,
   DialogActions,
   TextField,
 } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
+import { useAuth } from "../../contexts/UseAuth";
+import MuiAlert from "@mui/material/Alert";
 
 const monthNames = [
   "January",
@@ -29,6 +32,7 @@ const monthNames = [
 ];
 
 interface CalendarEvent {
+  id?: string;
   day: number;
   month: number;
   year: number;
@@ -56,6 +60,76 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
   const [eventTitle, setEventTitle] = useState("");
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [activeEvent, setActiveEvent] = useState<CalendarEvent | null>(null);
+  const { addEvent, getEvents, deleteEvent } = useAuth();
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: "success" | "info" | "warning" | "error";
+  }>({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const data = await getEvents();
+        setEvents(data);
+      } catch {}
+    };
+    fetchEvents();
+  }, [getEvents]);
+
+  const handleAddEvent = async () => {
+    if (!selectedDay || !eventTitle.trim()) return;
+    try {
+      await addEvent({
+        day: selectedDay.day,
+        month: selectedDay.month,
+        year: selectedDay.year,
+        title: eventTitle.trim(),
+      });
+      setSnackbar({
+        open: true,
+        message: "Event added!",
+        severity: "success",
+      });
+      const data = await getEvents();
+      setEvents(data);
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: "Login first!",
+        severity: "error",
+      });
+    }
+    setEventDialogOpen(false);
+    setEventTitle("");
+    setSelectedDay(null);
+  };
+
+  const handleDeleteEvent = async (event: CalendarEvent) => {
+    try {
+      if (event.id) {
+        await deleteEvent(event.id);
+        setSnackbar({
+          open: true,
+          message: "Event deleted!",
+          severity: "success",
+        });
+        const data = await getEvents();
+        setEvents(data);
+      }
+      setActiveEvent(null);
+      setEventDetailOpen(false);
+    } catch {
+      setSnackbar({
+        open: true,
+        message: "Failed to delete event!",
+        severity: "error",
+      });
+    }
+  };
 
   const scrollToDay = (monthIndex: number, dayIndex: number) => {
     const targetDayIndex = dayRefs.current.findIndex(
@@ -146,23 +220,6 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
     },
     [onClick]
   );
-
-  const handleAddEvent = () => {
-    if (selectedDay && eventTitle.trim()) {
-      setEvents((prev) => [
-        ...prev,
-        {
-          day: selectedDay.day,
-          month: selectedDay.month,
-          year: selectedDay.year,
-          title: eventTitle.trim(),
-        },
-      ]);
-      setEventDialogOpen(false);
-      setEventTitle("");
-      setSelectedDay(null);
-    }
-  };
 
   const generateCalendar = useMemo(() => {
     const daysInYear = (): { month: number; day: number }[] => {
@@ -405,7 +462,7 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
           <TextField
             autoFocus
             margin="dense"
-            label="Event "
+            label="Event"
             fullWidth
             value={eventTitle}
             onChange={(e) => setEventTitle(e.target.value)}
@@ -472,18 +529,7 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
               variant="outlined"
               color="error"
               onClick={() => {
-                setEvents((prev) =>
-                  prev.filter(
-                    (e) =>
-                      !(
-                        e.day === activeEvent?.day &&
-                        e.month === activeEvent?.month &&
-                        e.year === activeEvent?.year
-                      )
-                  )
-                );
-                setActiveEvent(null);
-                setEventDetailOpen(false);
+                if (activeEvent) handleDeleteEvent(activeEvent);
               }}
               sx={{ fontSize: "0.75rem", padding: "4px 8px" }}
             >
@@ -495,6 +541,22 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
           <Button onClick={() => setEventDetailOpen(false)}>Close</Button>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={2500}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <MuiAlert
+          elevation={6}
+          variant="filled"
+          severity={snackbar.severity} // <-- Burada dinamik olmalı!
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </MuiAlert>
+      </Snackbar>
     </Box>
   );
 };

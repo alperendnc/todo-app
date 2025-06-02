@@ -30,6 +30,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import DoneIcon from "@mui/icons-material/Done";
 import UndoIcon from "@mui/icons-material/Undo";
 import SearchIcon from "@mui/icons-material/Search";
+import MuiAlert from "@mui/material/Alert";
 
 const TodoListPage = () => {
   const {
@@ -53,8 +54,11 @@ const TodoListPage = () => {
   };
 
   const [task, setTask] = useState<Todo>(defaultValues);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "error" | "info" | "warning",
+  });
   const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [openTaskDialog, setOpenTaskDialog] = useState(false);
@@ -66,32 +70,57 @@ const TodoListPage = () => {
     }
   }, [editingTodo, isEdit]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isEdit && editingTodo) {
-      updateTodo(
-        editingTodo.id,
-        task.task,
-        task.description,
-        task.date || "",
-        task.priority || ""
-      );
-    } else {
-      const id = uuidv4();
-      addTodo({ ...task, id });
+    try {
+      if (isEdit && editingTodo) {
+        await updateTodo(
+          editingTodo.id,
+          task.task,
+          task.description,
+          task.date || "",
+          task.priority || ""
+        );
+        setSnackbar({
+          open: true,
+          message: "Task updated!",
+          severity: "success",
+        });
+      } else {
+        const id = uuidv4();
+        await addTodo({ ...task, id });
+        setSnackbar({
+          open: true,
+          message: "Task added!",
+          severity: "success",
+        });
+      }
+      setTask(defaultValues);
+    } catch {
+      setSnackbar({
+        open: true,
+        message: "Login first!",
+        severity: "error",
+      });
     }
-    setTask(defaultValues);
   };
 
   const handleToggleComplete = (id: string) => {
     toggleComplete(id);
     const completedTask = todos.find((todo) => todo.id === id);
     if (completedTask?.completed) {
-      setSnackbarMessage(`Task "${completedTask.task}" marked as undone!`);
+      setSnackbar({
+        open: true,
+        message: `Task "${completedTask.task}" marked as undone!`,
+        severity: "info",
+      });
     } else {
-      setSnackbarMessage(`Task "${completedTask?.task}" marked as done!`);
+      setSnackbar({
+        open: true,
+        message: `Task "${completedTask?.task}" marked as done!`,
+        severity: "success",
+      });
     }
-    setSnackbarOpen(true);
   };
 
   const handleTaskClick = (todo: Todo) => {
@@ -102,6 +131,11 @@ const TodoListPage = () => {
   const handleCloseTaskDialog = () => {
     setOpenTaskDialog(false);
     setSelectedTask(null);
+  };
+
+  const handleDelete = async (id: string) => {
+    await deleteTodo(id);
+    setSnackbar({ open: true, message: "Task deleted!", severity: "success" });
   };
 
   const filteredTodos = todos.filter((todo) => {
@@ -368,7 +402,7 @@ const TodoListPage = () => {
                   </IconButton>
                   <IconButton
                     color="secondary"
-                    onClick={() => deleteTodo(todo.id)}
+                    onClick={() => handleDelete(todo.id)}
                   >
                     <DeleteIcon />
                   </IconButton>
@@ -416,11 +450,20 @@ const TodoListPage = () => {
       </Dialog>
 
       <Snackbar
-        open={snackbarOpen}
+        open={snackbar.open}
         autoHideDuration={3000}
-        onClose={() => setSnackbarOpen(false)}
-        message={snackbarMessage}
-      />
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <MuiAlert
+          elevation={6}
+          variant="filled"
+          severity={snackbar.severity}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+        >
+          {snackbar.message}
+        </MuiAlert>
+      </Snackbar>
     </Box>
   );
 };

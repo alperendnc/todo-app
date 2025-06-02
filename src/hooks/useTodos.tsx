@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+
+import { useAuth } from "src/contexts/UseAuth";
 
 export interface Todo {
   id: string;
@@ -8,35 +10,39 @@ export interface Todo {
   date?: string;
   completed: boolean;
   priority?: string;
+  userId?: string;
 }
 
 const useTodos = () => {
+  const { addTask, getTasks, deleteTask, updateTask } = useAuth();
   const [todos, setTodos] = useState<Todo[]>([]);
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
   const [isEdit, setIsEdit] = useState<boolean>(false);
 
-  const addTodo = (todo: Todo) => {
-    const newTodo: Todo = {
-      id: todo.id || Date.now().toString(),
-      task: todo.task,
-      description: todo.description,
-      date: todo.date || "",
-      completed: todo.completed || false,
-      priority: todo.priority || "",
-    };
-    setTodos((prev) => [...prev, newTodo]);
+  const fetchTodos = useCallback(async () => {
+    const data = await getTasks();
+    setTodos(data);
+  }, [getTasks]);
+
+  useEffect(() => {
+    fetchTodos();
+  }, [getTasks, fetchTodos]);
+
+  const addTodo = async (todo: Todo) => {
+    await addTask(todo);
+    fetchTodos();
   };
 
-  const deleteTodo = (id: string) => {
-    setTodos((prev) => prev.filter((todo) => todo.id !== id));
+  const deleteTodo = async (id: string) => {
+    await deleteTask(id);
+    fetchTodos();
   };
 
-  const toggleComplete = (id: string) => {
-    setTodos((prev) =>
-      prev.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
+  const toggleComplete = async (id: string) => {
+    const todo = todos.find((t) => t.id === id);
+    if (!todo) return;
+    await updateTask(id, { completed: !todo.completed });
+    fetchTodos();
   };
 
   const startEditing = (todo: Todo) => {
@@ -44,42 +50,22 @@ const useTodos = () => {
     setIsEdit(true);
   };
 
-  const updateTodo = (
+  const updateTodo = async (
     id: string,
     newTask: string,
     newDescription: string,
     newDate: string,
     newPriority: string
   ) => {
-    setTodos((prev) =>
-      prev.map((todo) =>
-        todo.id === id
-          ? {
-              ...todo,
-              task: newTask,
-              description: newDescription,
-              date: newDate,
-              priority: newPriority,
-            }
-          : todo
-      )
-    );
+    await updateTask(id, {
+      task: newTask,
+      description: newDescription,
+      date: newDate,
+      priority: newPriority,
+    });
     setEditingTodo(null);
     setIsEdit(false);
-  };
-
-  const addNote = (id: string, note: string) => {
-    setTodos((prev) =>
-      prev.map((todo) => (todo.id === id ? { ...todo, note } : todo))
-    );
-  };
-
-  const deleteCompleted = () => {
-    setTodos((prev) => prev.filter((todo) => !todo.completed));
-  };
-
-  const deleteAll = () => {
-    setTodos([]);
+    fetchTodos();
   };
 
   return {
@@ -91,9 +77,6 @@ const useTodos = () => {
     updateTodo,
     editingTodo,
     isEdit,
-    addNote,
-    deleteCompleted,
-    deleteAll,
   };
 };
 
