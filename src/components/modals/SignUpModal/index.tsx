@@ -11,10 +11,12 @@ import {
   Alert,
 } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import { useThemeMode } from "src/contexts/ThemeContext";
 
 const SignUp: React.FC = () => {
   const { signUp } = useAuth();
   const navigate = useNavigate();
+  const { mode } = useThemeMode();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -47,21 +49,36 @@ const SignUp: React.FC = () => {
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", py: 8 }}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        py: 8,
+      }}
+    >
       <Container maxWidth="sm">
         <Box
           sx={{
             p: 5,
             borderRadius: 3,
             boxShadow: 4,
-            backgroundColor: "white",
+            backgroundColor: mode === "dark" ? "#2d2f31" : "white",
             textAlign: "center",
+            color: mode === "dark" ? "#fff" : "#000",
           }}
         >
-          <Typography variant="h4" gutterBottom fontWeight={600}>
+          <Typography
+            variant="h4"
+            gutterBottom
+            fontWeight={600}
+            sx={{ color: mode === "dark" ? "#fff" : "#000" }}
+          >
             Create Account
           </Typography>
-          <Typography variant="body1" color="text.secondary" mb={3}>
+          <Typography
+            variant="body1"
+            color={mode === "dark" ? "#bdbdbd" : "text.secondary"}
+            mb={3}
+          >
             Sign up to get started
           </Typography>
 
@@ -75,6 +92,22 @@ const SignUp: React.FC = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              InputProps={{
+                style: { color: mode === "dark" ? "#fff" : "#000" },
+              }}
+              InputLabelProps={{
+                style: { color: mode === "dark" ? "#bdbdbd" : undefined },
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: mode === "dark" ? "#444" : undefined,
+                  },
+                  "&:hover fieldset": {
+                    borderColor: mode === "dark" ? "#90caf9" : undefined,
+                  },
+                },
+              }}
             />
             <TextField
               fullWidth
@@ -85,6 +118,22 @@ const SignUp: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              InputProps={{
+                style: { color: mode === "dark" ? "#fff" : "#000" },
+              }}
+              InputLabelProps={{
+                style: { color: mode === "dark" ? "#bdbdbd" : undefined },
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: mode === "dark" ? "#444" : undefined,
+                  },
+                  "&:hover fieldset": {
+                    borderColor: mode === "dark" ? "#90caf9" : undefined,
+                  },
+                },
+              }}
             />
             <Button
               type="submit"
@@ -132,7 +181,11 @@ const SignUp: React.FC = () => {
         <Alert
           onClose={() => setSnackbarOpen(false)}
           severity={snackbarSeverity}
-          sx={{ width: "100%" }}
+          sx={{
+            width: "100%",
+            background: mode === "dark" ? "#232526" : undefined,
+            color: mode === "dark" ? "#fff" : undefined,
+          }}
         >
           {snackbarMessage}
         </Alert>

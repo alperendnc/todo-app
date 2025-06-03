@@ -1,7 +1,9 @@
 import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-import { ThemeProvider, Box, CssBaseline } from "@mui/material";
-import theme from "./themes";
+import { ThemeProvider as MuiThemeProvider, CssBaseline } from "@mui/material";
+import { ThemeModeProvider, useThemeMode } from "src/contexts/ThemeContext";
+import { createTheme } from "@mui/material/styles";
+import Box from "@mui/material/Box";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import MainPage from "./App/MainPage/page";
@@ -13,14 +15,21 @@ import SignUp from "./components/modals/SignUpModal";
 import Login from "./components/modals/LoginModal/Sign";
 import { SnackbarProvider } from "notistack";
 
-const App: React.FC = () => {
+const AppContent = () => {
+  const { mode } = useThemeMode();
+  const theme = createTheme({
+    palette: {
+      mode,
+    },
+  });
+
   const location = useLocation();
 
   const isAuthPage =
     location.pathname === "/login" || location.pathname === "/signup";
 
   return (
-    <ThemeProvider theme={theme}>
+    <MuiThemeProvider theme={theme}>
       <CssBaseline />
       <SnackbarProvider
         maxSnack={3}
@@ -34,7 +43,10 @@ const App: React.FC = () => {
               flexGrow: 1,
               display: "flex",
               flexDirection: "column",
-              background: "linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%)",
+              background:
+                mode === "dark"
+                  ? "linear-gradient(135deg, #232526 0%, #414345 100%)"
+                  : "linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%)",
               minHeight: "100vh",
             }}
           >
@@ -55,8 +67,13 @@ const App: React.FC = () => {
           </Box>
         </Box>
       </SnackbarProvider>
-    </ThemeProvider>
+    </MuiThemeProvider>
   );
 };
 
+const App = () => (
+  <ThemeModeProvider>
+    <AppContent />
+  </ThemeModeProvider>
+);
 export default App;

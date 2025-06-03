@@ -5,6 +5,9 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   User,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  updatePassword,
 } from "firebase/auth";
 import { auth } from "../config";
 import {
@@ -17,6 +20,7 @@ import {
   addDoc,
   query,
   where,
+  getDoc,
 } from "firebase/firestore";
 import { Todo } from "../hooks/useTodos";
 
@@ -38,6 +42,13 @@ export interface Note {
   createdAt?: Date;
 }
 
+interface UserProfile {
+  displayName: string;
+  email?: string;
+  avatar?: string;
+  createdAt?: any;
+}
+
 interface AuthContextType {
   currentUser: User | null;
   signUp: (email: string, password: string) => Promise<any>;
@@ -54,6 +65,11 @@ interface AuthContextType {
   addEvent: (event: Omit<CalendarEvent, "id" | "userId">) => Promise<void>;
   getEvents: () => Promise<CalendarEvent[]>;
   deleteEvent: (eventId: string) => Promise<void>;
+  getUserProfile: () => Promise<UserProfile | null>;
+  changePassword: (
+    currentPassword: string,
+    newPassword: string
+  ) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -195,6 +211,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     await deleteDoc(doc(DB, "events", eventId));
   };
 
+  const getUserProfile = async (): Promise<UserProfile | null> => {
+    if (!currentUser) return null;
+    const userRef = doc(DB, "users", currentUser.uid);
+    const userSnap = await getDoc(userRef);
+    if (userSnap.exists()) {
+      return userSnap.data() as UserProfile;
+    }
+    return null;
+  };
+
+  const changePassword = async (
+    currentPassword: string,
+    newPassword: string
+  ) => {
+    if (!currentUser || !currentUser.email)
+      throw new Error("User not logged in");
+    const credential = EmailAuthProvider.credential(
+      currentUser.email,
+      currentPassword
+    );
+    await reauthenticateWithCredential(currentUser, credential);
+    await updatePassword(currentUser, newPassword);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -213,6 +253,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         addEvent,
         getEvents,
         deleteEvent,
+        getUserProfile,
+        changePassword,
       }}
     >
       {children}

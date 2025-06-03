@@ -11,10 +11,12 @@ import {
 } from "@mui/material";
 import { useNavigate, Link } from "react-router-dom";
 import LoginIcon from "@mui/icons-material/Login";
+import { useThemeMode } from "src/contexts/ThemeContext";
 
 export default function Login() {
   const { logIn } = useAuth();
   const navigate = useNavigate();
+  const { mode } = useThemeMode();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -44,21 +46,36 @@ export default function Login() {
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", py: 8 }}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        py: 8,
+      }}
+    >
       <Container maxWidth="sm">
         <Box
           sx={{
             p: 5,
             borderRadius: 3,
             boxShadow: 4,
-            backgroundColor: "white",
+            backgroundColor: mode === "dark" ? "#2d2f31" : "white",
             textAlign: "center",
+            color: mode === "dark" ? "#fff" : "#000",
           }}
         >
-          <Typography variant="h4" gutterBottom fontWeight={600}>
+          <Typography
+            variant="h4"
+            gutterBottom
+            fontWeight={600}
+            sx={{ color: mode === "dark" ? "#fff" : "#000" }}
+          >
             Welcome Back
           </Typography>
-          <Typography variant="body1" color="text.secondary" mb={3}>
+          <Typography
+            variant="body1"
+            color={mode === "dark" ? "#bdbdbd" : "text.secondary"}
+            mb={3}
+          >
             Please enter your credentials to login.
           </Typography>
 
@@ -72,6 +89,22 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              InputProps={{
+                style: { color: mode === "dark" ? "#fff" : "#000" },
+              }}
+              InputLabelProps={{
+                style: { color: mode === "dark" ? "#bdbdbd" : undefined },
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: mode === "dark" ? "#444" : undefined,
+                  },
+                  "&:hover fieldset": {
+                    borderColor: mode === "dark" ? "#90caf9" : undefined,
+                  },
+                },
+              }}
             />
             <TextField
               fullWidth
@@ -82,6 +115,22 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              InputProps={{
+                style: { color: mode === "dark" ? "#fff" : "#000" },
+              }}
+              InputLabelProps={{
+                style: { color: mode === "dark" ? "#bdbdbd" : undefined },
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: mode === "dark" ? "#444" : undefined,
+                  },
+                  "&:hover fieldset": {
+                    borderColor: mode === "dark" ? "#90caf9" : undefined,
+                  },
+                },
+              }}
             />
             <Button
               type="submit"
@@ -129,7 +178,11 @@ export default function Login() {
         <Alert
           onClose={() => setSnackbarOpen(false)}
           severity={snackbarSeverity}
-          sx={{ width: "100%" }}
+          sx={{
+            width: "100%",
+            background: mode === "dark" ? "#232526" : undefined,
+            color: mode === "dark" ? "#fff" : undefined,
+          }}
         >
           {snackbarMessage}
         </Alert>

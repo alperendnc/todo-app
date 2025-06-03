@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import useTodos, { Todo } from "../../hooks/useTodos";
 import { v4 as uuidv4 } from "uuid";
+import { useThemeMode } from "../../contexts/ThemeContext";
 import dayjs from "dayjs";
 import {
   DatePicker as MuiDatePicker,
@@ -63,6 +64,7 @@ const TodoListPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [openTaskDialog, setOpenTaskDialog] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Todo | null>(null);
+  const { mode } = useThemeMode();
 
   useEffect(() => {
     if (isEdit && editingTodo) {
@@ -158,6 +160,10 @@ const TodoListPage = () => {
         gap: 2,
         height: "100%",
         p: 3,
+        background:
+          mode === "dark"
+            ? "linear-gradient(135deg, #232526 0%, #414345 100%)"
+            : "linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%)",
       }}
     >
       <Typography variant="h4">Tasks</Typography>
@@ -271,7 +277,7 @@ const TodoListPage = () => {
           flexDirection: "column",
           gap: 2,
           padding: 2,
-          backgroundColor: "#f9f9f9",
+          background: mode === "dark" ? "#232526" : "#f9f9f9",
           borderRadius: 2,
           boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
         }}
@@ -281,7 +287,7 @@ const TodoListPage = () => {
           sx={{
             textAlign: "center",
             fontWeight: "bold",
-            color: "#333",
+            color: mode === "dark" ? "#fff" : "#333",
           }}
         >
           Task Manager
@@ -298,7 +304,7 @@ const TodoListPage = () => {
             display: "flex",
             flexDirection: "column",
             gap: 1,
-            backgroundColor: "#fff",
+            background: mode === "dark" ? "#2d2f31" : "#fff",
             padding: 2,
             borderRadius: 2,
             boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
@@ -327,12 +333,16 @@ const TodoListPage = () => {
                   alignItems: "center",
                   justifyContent: "space-between",
                   paddingY: 1,
-                  borderBottom: "2px solid #ccc",
+                  borderBottom:
+                    mode === "dark" ? "2px solid #35373a" : "2px solid #ccc",
                   cursor: "pointer",
                   transition: "background 0.2s",
                   "&:hover": {
-                    background: "#f0f4ff",
-                    boxShadow: "0 2px 8px 0 rgba(25, 118, 210, 0.08)",
+                    background: mode === "dark" ? "#35373a" : "#f0f4ff",
+                    boxShadow:
+                      mode === "dark"
+                        ? "0 2px 8px 0 rgba(25, 118, 210, 0.10)"
+                        : "0 2px 8px 0 rgba(25, 118, 210, 0.08)",
                   },
                 }}
                 onClick={() => handleTaskClick(todo)}
@@ -354,7 +364,11 @@ const TodoListPage = () => {
                   variant="h6"
                   sx={{
                     textDecoration: todo.completed ? "line-through" : "none",
-                    color: todo.completed ? "#757575" : "#000",
+                    color: todo.completed
+                      ? "#757575"
+                      : mode === "dark"
+                      ? "#fff"
+                      : "#000",
                     flex: 2,
                     whiteSpace: "nowrap",
                     overflow: "hidden",
@@ -369,7 +383,11 @@ const TodoListPage = () => {
                   variant="body2"
                   sx={{
                     textDecoration: todo.completed ? "line-through" : "none",
-                    color: todo.completed ? "#9e9e9e" : "#616161",
+                    color: todo.completed
+                      ? "#9e9e9e"
+                      : mode === "dark"
+                      ? "#bdbdbd"
+                      : "#616161",
                     flex: 3,
                     whiteSpace: "nowrap",
                     overflow: "hidden",
@@ -425,8 +443,21 @@ const TodoListPage = () => {
         maxWidth="sm"
         fullWidth
       >
-        <DialogTitle>Task Details</DialogTitle>
-        <DialogContent dividers>
+        <DialogTitle
+          sx={{
+            background: mode === "dark" ? "#232526" : "#fff",
+            color: mode === "dark" ? "#fff" : "#000",
+          }}
+        >
+          Task Details
+        </DialogTitle>
+        <DialogContent
+          dividers
+          sx={{
+            background: mode === "dark" ? "#232526" : "#fff",
+            color: mode === "dark" ? "#fff" : "#000",
+          }}
+        >
           {selectedTask && (
             <Box>
               <Typography variant="h6" sx={{ mb: 2, wordBreak: "break-word" }}>
@@ -444,7 +475,11 @@ const TodoListPage = () => {
             </Box>
           )}
         </DialogContent>
-        <DialogActions>
+        <DialogActions
+          sx={{
+            background: mode === "dark" ? "#232526" : "#fff",
+          }}
+        >
           <Button onClick={handleCloseTaskDialog}>Close</Button>
         </DialogActions>
       </Dialog>
@@ -460,6 +495,10 @@ const TodoListPage = () => {
           variant="filled"
           severity={snackbar.severity}
           onClose={() => setSnackbar({ ...snackbar, open: false })}
+          sx={{
+            background: mode === "dark" ? "#232526" : undefined,
+            color: mode === "dark" ? "#fff" : undefined,
+          }}
         >
           {snackbar.message}
         </MuiAlert>
