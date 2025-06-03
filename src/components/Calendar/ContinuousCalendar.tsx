@@ -15,6 +15,7 @@ import {
 import InfoIcon from "@mui/icons-material/Info";
 import { useAuth } from "../../contexts/UseAuth";
 import MuiAlert from "@mui/material/Alert";
+import { useThemeMode } from "../../contexts/ThemeContext";
 
 const monthNames = [
   "January",
@@ -44,6 +45,7 @@ interface ContinuousCalendarProps {
 }
 
 const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
+  const { mode } = useThemeMode();
   const today = useMemo(() => new Date(), []);
   const dayRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [year, setYear] = useState<number>(today.getFullYear());
@@ -70,6 +72,7 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
     message: "",
     severity: "success",
   });
+
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -293,17 +296,24 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
                 aspectRatio: "1 / 1",
                 width: "100%",
                 flexGrow: 1,
-                border: isSelected ? "2px solid #1976d2" : "1px solid #ccc",
+                border: isSelected
+                  ? `2px solid ${mode === "dark" ? "#90caf9" : "#1976d2"}`
+                  : `1px solid ${mode === "dark" ? "#444" : "#ccc"}`,
                 borderRadius: 2,
                 cursor: month >= 0 ? "pointer" : "default",
                 m: 0.5,
                 transition:
                   "box-shadow 0.2s, border-color 0.2s, background 0.2s",
-                background: isSelected ? "#e3f2fd" : "transparent",
+                background: isSelected
+                  ? mode === "dark"
+                    ? "#1e293b"
+                    : "#e3f2fd"
+                  : "transparent",
                 "&:hover": {
-                  boxShadow: "0 0 0 2px #90caf9",
+                  boxShadow:
+                    mode === "dark" ? "0 0 0 2px #90caf9" : "0 0 0 2px #90caf9",
                   borderColor: "#90caf9",
-                  background: "#bbdefb",
+                  background: mode === "dark" ? "#232526" : "#e3f2fd",
                   zIndex: 2,
                 },
                 opacity: month < 0 ? 0.3 : 1,
@@ -317,8 +327,20 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
                   left: 6,
                   fontSize: 12,
                   fontWeight: isToday ? "bold" : "normal",
-                  backgroundColor: isToday ? "blue" : "transparent",
-                  color: isToday ? "#fff" : month < 0 ? "gray" : "black",
+                  backgroundColor: isToday
+                    ? mode === "dark"
+                      ? "#1976d2"
+                      : "blue"
+                    : "transparent",
+                  color: isToday
+                    ? "#fff"
+                    : month < 0
+                    ? mode === "dark"
+                      ? "#888"
+                      : "gray"
+                    : mode === "dark"
+                    ? "#fff"
+                    : "#000",
                   borderRadius: "50%",
                   width: 24,
                   height: 24,
@@ -336,7 +358,7 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
                     position: "absolute",
                     bottom: 4,
                     left: 8,
-                    color: "#bbb",
+                    color: mode === "dark" ? "#bbb" : "#bbb",
                   }}
                 >
                   {monthNames[month]}
@@ -359,7 +381,7 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
                       width: 20,
                       height: 20,
                       borderRadius: 4,
-                      background: "#1976d2",
+                      background: mode === "dark" ? "#1976d2" : "#1976d2",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -374,7 +396,7 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
         })}
       </Box>
     ));
-  }, [year, today, selectedDay, events, handleDayClick]);
+  }, [year, today, selectedDay, events, handleDayClick, mode]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -412,25 +434,33 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
       sx={{
         maxHeight: "90vh",
         overflowY: "scroll",
-        bgcolor: "white",
+        background: mode === "dark" ? "#232526" : "#f5f7fa",
         borderRadius: 3,
         boxShadow: 4,
-        p: 2,
+        p: 0,
       }}
     >
       <Box
         position="sticky"
         top={0}
-        zIndex={10}
-        bgcolor="white"
-        p={2}
-        borderBottom="1px solid #eee"
+        zIndex={1}
+        sx={{
+          background: mode === "dark" ? "#232526" : "#f5f7fa",
+          p: 2,
+          borderBottom: `1px solid ${mode === "dark" ? "#444" : "#eee"}`,
+          boxShadow: "none",
+        }}
       >
         <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
           <Select
             value={`${selectedMonth}`}
             onChange={handleMonthChange}
             size="small"
+            sx={{
+              background: mode === "dark" ? "#2d2f31" : "#fff",
+              color: mode === "dark" ? "#fff" : "#000",
+              borderRadius: 1,
+            }}
           >
             {monthNames.map((month, index) => (
               <MenuItem key={index} value={`${index}`}>
@@ -457,8 +487,20 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
       </Box>
       <Box mt={2}>{generateCalendar}</Box>
       <Dialog open={eventDialogOpen} onClose={() => setEventDialogOpen(false)}>
-        <DialogTitle>Add Event</DialogTitle>
-        <DialogContent>
+        <DialogTitle
+          sx={{
+            background: mode === "dark" ? "#232526" : "#fff",
+            color: mode === "dark" ? "#fff" : "#000",
+          }}
+        >
+          Add Event
+        </DialogTitle>
+        <DialogContent
+          sx={{
+            background: mode === "dark" ? "#2d2f31" : "#fff",
+            color: mode === "dark" ? "#fff" : "#000",
+          }}
+        >
           <TextField
             autoFocus
             margin="dense"
@@ -466,9 +508,17 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
             fullWidth
             value={eventTitle}
             onChange={(e) => setEventTitle(e.target.value)}
+            sx={{
+              input: { color: mode === "dark" ? "#fff" : "#000" },
+              label: { color: mode === "dark" ? "#fff" : "#000" },
+            }}
           />
         </DialogContent>
-        <DialogActions>
+        <DialogActions
+          sx={{
+            background: mode === "dark" ? "#2d2f31" : "#fff",
+          }}
+        >
           <Button onClick={() => setEventDialogOpen(false)}>Cancel</Button>
           <Button
             onClick={handleAddEvent}
@@ -480,8 +530,20 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
         </DialogActions>
       </Dialog>
       <Dialog open={eventDetailOpen} onClose={() => setEventDetailOpen(false)}>
-        <DialogTitle>Event Details</DialogTitle>
-        <DialogContent>
+        <DialogTitle
+          sx={{
+            background: mode === "dark" ? "#232526" : "#fff",
+            color: mode === "dark" ? "#fff" : "#000",
+          }}
+        >
+          Event Details
+        </DialogTitle>
+        <DialogContent
+          sx={{
+            background: mode === "dark" ? "#2d2f31" : "#fff",
+            color: mode === "dark" ? "#fff" : "#000",
+          }}
+        >
           <Box
             sx={{
               width: 200,
@@ -490,7 +552,7 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
-              backgroundColor: "#f5f5f5",
+              background: mode === "dark" ? "#35373a" : "#f5f5f5",
               borderRadius: 2,
               textAlign: "center",
               gap: 1,
@@ -537,7 +599,11 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
             </Button>
           </Box>
         </DialogContent>
-        <DialogActions>
+        <DialogActions
+          sx={{
+            background: mode === "dark" ? "#2d2f31" : "#fff",
+          }}
+        >
           <Button onClick={() => setEventDetailOpen(false)}>Close</Button>
         </DialogActions>
       </Dialog>
@@ -550,9 +616,13 @@ const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
         <MuiAlert
           elevation={6}
           variant="filled"
-          severity={snackbar.severity} // <-- Burada dinamik olmalı!
+          severity={snackbar.severity}
           onClose={() => setSnackbar({ ...snackbar, open: false })}
-          sx={{ width: "100%" }}
+          sx={{
+            width: "100%",
+            background: mode === "dark" ? "#232526" : undefined,
+            color: mode === "dark" ? "#fff" : undefined,
+          }}
         >
           {snackbar.message}
         </MuiAlert>

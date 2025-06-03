@@ -16,35 +16,43 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import NoteIcon from "@mui/icons-material/Note";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { useNavigate } from "react-router-dom";
+import { useThemeMode } from "src/contexts/ThemeContext";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const { mode } = useThemeMode();
 
   const features = [
     {
       title: "Main Page",
       description: "Return to the main page and access all features.",
       route: "/",
-      icon: <MenuIcon sx={{ color: "white" }} />,
+      icon: <MenuIcon />,
     },
     {
       title: "Todo",
       description: "Manage your tasks and stay organized.",
       route: "/todos",
-      icon: <CheckCircleIcon sx={{ color: "white" }} />,
+      icon: (
+        <CheckCircleIcon sx={{ color: mode === "dark" ? "#fff" : "#1976d2" }} />
+      ),
     },
     {
       title: "Notes",
       description: "Store your notes and access them anytime.",
       route: "/notes",
-      icon: <NoteIcon sx={{ color: "white" }} />,
+      icon: <NoteIcon sx={{ color: mode === "dark" ? "#fff" : "#1976d2" }} />,
     },
     {
       title: "Calendar",
       description: "Plan by dates and create reminders.",
       route: "/calendar",
-      icon: <CalendarTodayIcon sx={{ color: "white" }} />,
+      icon: (
+        <CalendarTodayIcon
+          sx={{ color: mode === "dark" ? "#fff" : "#1976d2" }}
+        />
+      ),
     },
   ];
 
@@ -56,7 +64,7 @@ const Sidebar = () => {
           position: "absolute",
           top: 16,
           left: 16,
-          color: "white",
+          color: mode === "dark" ? "#fff" : "#1976d2",
           zIndex: 1300,
         }}
       >
@@ -71,8 +79,8 @@ const Sidebar = () => {
           [`& .MuiDrawer-paper`]: {
             width: 240,
             boxSizing: "border-box",
-            backgroundColor: "#212121",
-            color: "white",
+            backgroundColor: mode === "dark" ? "#212121" : "#fff",
+            color: mode === "dark" ? "#fff" : "#222",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
@@ -82,8 +90,8 @@ const Sidebar = () => {
         <Box sx={{ overflow: "auto" }}>
           <Toolbar
             sx={{
-              backgroundColor: "#212121",
-              color: "white",
+              backgroundColor: mode === "dark" ? "#212121" : "#fff",
+              color: mode === "dark" ? "#fff" : "#222",
             }}
           ></Toolbar>
           <List>
@@ -96,25 +104,30 @@ const Sidebar = () => {
                   }}
                   sx={{
                     "&:hover": {
-                      backgroundColor: "#424242",
+                      backgroundColor: mode === "dark" ? "#424242" : "#f0f0f0",
                     },
                   }}
                 >
-                  <ListItemIcon sx={{ color: "white" }}>
+                  <ListItemIcon
+                    sx={{ color: mode === "dark" ? "#fff" : "#1976d2" }}
+                  >
                     {feature.icon}
                   </ListItemIcon>
                   <ListItemText
                     primary={feature.title}
                     secondary={feature.description}
-                    primaryTypographyProps={{ color: "white" }}
-                    secondaryTypographyProps={{ color: "gray" }}
+                    primaryTypographyProps={{
+                      color: mode === "dark" ? "#fff" : "#222",
+                    }}
+                    secondaryTypographyProps={{
+                      color: mode === "dark" ? "#bdbdbd" : "#757575",
+                    }}
                   />
                 </ListItemButton>
               </ListItem>
             ))}
           </List>
         </Box>
-        {/* Settings en altta */}
         <Box>
           <List>
             <ListItem disablePadding>
@@ -125,18 +138,24 @@ const Sidebar = () => {
                 }}
                 sx={{
                   "&:hover": {
-                    backgroundColor: "#424242",
+                    backgroundColor: mode === "dark" ? "#424242" : "#f0f0f0",
                   },
                 }}
               >
-                <ListItemIcon sx={{ color: "white" }}>
+                <ListItemIcon
+                  sx={{ color: mode === "dark" ? "#fff" : "#1976d2" }}
+                >
                   <SettingsIcon />
                 </ListItemIcon>
                 <ListItemText
                   primary="Settings"
                   secondary="Adjust your preferences"
-                  primaryTypographyProps={{ color: "white" }}
-                  secondaryTypographyProps={{ color: "gray" }}
+                  primaryTypographyProps={{
+                    color: mode === "dark" ? "#fff" : "#222",
+                  }}
+                  secondaryTypographyProps={{
+                    color: mode === "dark" ? "#bdbdbd" : "#757575",
+                  }}
                 />
               </ListItemButton>
             </ListItem>

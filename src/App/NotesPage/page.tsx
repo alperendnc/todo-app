@@ -29,9 +29,11 @@ import {
 import MuiAlert from "@mui/material/Alert";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "src/config.js";
+import { useThemeMode } from "../../contexts/ThemeContext";
 
 const NotesPage: React.FC = () => {
   const { currentUser, addNote, updateNote, deleteNote, getNotes } = useAuth();
+  const { mode } = useThemeMode();
 
   const [notes, setNotes] = useState<Note[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -154,8 +156,22 @@ const NotesPage: React.FC = () => {
   });
 
   return (
-    <Box sx={{ p: 2, minHeight: "100vh" }}>
-      <Typography variant="h4" fontWeight="bold" mb={4}>
+    <Box
+      sx={{
+        p: 2,
+        minHeight: "100vh",
+        background:
+          mode === "dark"
+            ? "linear-gradient(135deg, #232526 0%, #414345 100%)"
+            : "linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%)",
+      }}
+    >
+      <Typography
+        variant="h4"
+        fontWeight="bold"
+        mb={4}
+        sx={{ color: mode === "dark" ? "#fff" : "#000" }}
+      >
         Notes
       </Typography>
 
@@ -164,8 +180,8 @@ const NotesPage: React.FC = () => {
           <Grid key={note.id}>
             <Card
               sx={{
-                backgroundColor: "#ffffff",
-                color: "#000000",
+                backgroundColor: mode === "dark" ? "#2d2f31" : "#fff",
+                color: mode === "dark" ? "#fff" : "#000",
                 boxShadow: 3,
                 transition: "transform 0.3s",
                 height: 150,
@@ -175,6 +191,10 @@ const NotesPage: React.FC = () => {
                 justifyContent: "space-between",
                 "&:hover": {
                   transform: "scale(1.05)",
+                  boxShadow:
+                    mode === "dark"
+                      ? "0 4px 16px rgba(25, 118, 210, 0.15)"
+                      : "0 4px 10px rgba(0, 0, 0, 0.2)",
                 },
               }}
               onClick={() => handleViewNote(index)}
@@ -182,13 +202,22 @@ const NotesPage: React.FC = () => {
               <CardContent>
                 <Typography
                   variant="h6"
-                  sx={{ fontWeight: 600, color: "#000000" }}
+                  sx={{
+                    fontWeight: 600,
+                    color: mode === "dark" ? "#fff" : "#000",
+                  }}
                 >
                   {note.title.length > 10
                     ? note.title.substring(0, 10) + "..."
                     : note.title}
                 </Typography>
-                <Typography variant="body2" sx={{ color: "#757575", mt: 1 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: mode === "dark" ? "#bdbdbd" : "#757575",
+                    mt: 1,
+                  }}
+                >
                   {note.content.length > 10
                     ? note.content.substring(0, 10) + "..."
                     : note.content}
@@ -208,7 +237,7 @@ const NotesPage: React.FC = () => {
                     e.stopPropagation();
                     handleFavorite(note.id ?? "");
                   }}
-                  sx={{ color: "#000000" }}
+                  sx={{ color: mode === "dark" ? "#fff" : "#000" }}
                 >
                   {note.favorite ? (
                     <Favorite color="error" />
@@ -222,7 +251,7 @@ const NotesPage: React.FC = () => {
                       e.stopPropagation();
                       handleViewNote(index);
                     }}
-                    sx={{ color: "#000000" }}
+                    sx={{ color: mode === "dark" ? "#fff" : "#000" }}
                   >
                     <Edit />
                   </IconButton>
@@ -231,7 +260,7 @@ const NotesPage: React.FC = () => {
                       e.stopPropagation();
                       handleDelete(note.id ?? "");
                     }}
-                    sx={{ color: "#000000" }}
+                    sx={{ color: mode === "dark" ? "#fff" : "#000" }}
                   >
                     <Delete />
                   </IconButton>
@@ -349,7 +378,8 @@ const NotesPage: React.FC = () => {
             right: 16,
             width: "300px",
             transition: "width 0.3s ease-in-out",
-            backgroundColor: "white",
+            backgroundColor: mode === "dark" ? "#232526" : "#fff",
+            color: mode === "dark" ? "#fff" : "#000",
             boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
             borderRadius: 2,
             p: 2,
@@ -360,6 +390,11 @@ const NotesPage: React.FC = () => {
             placeholder="Search notes..."
             variant="outlined"
             onChange={(e) => setSearchQuery(e.target.value)}
+            InputProps={{
+              style: {
+                color: mode === "dark" ? "#fff" : "#000",
+              },
+            }}
           />
         </Box>
       )}

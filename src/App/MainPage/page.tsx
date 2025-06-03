@@ -14,10 +14,12 @@ import {
   ChecklistRtl,
 } from "@mui/icons-material";
 import { motion } from "framer-motion";
+import { useThemeMode } from "../../contexts/ThemeContext";
 
 const MainPage = () => {
   const navigate = useNavigate();
   const theme = useTheme();
+  const { mode } = useThemeMode();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const featureCards = [
@@ -30,7 +32,7 @@ const MainPage = () => {
       ),
       description: "Organize tasks effectively",
       route: "/todos",
-      color: theme.palette.primary.light,
+      color: mode === "dark" ? "#232526" : theme.palette.primary.light,
     },
     {
       title: "Notes",
@@ -39,9 +41,9 @@ const MainPage = () => {
           sx={{ fontSize: 60, color: theme.palette.secondary.main }}
         />
       ),
-      description: "Capture ideas and important information",
+      description: "Capture important information",
       route: "/notes",
-      color: theme.palette.secondary.light,
+      color: mode === "dark" ? "#232526" : theme.palette.secondary.light,
     },
     {
       title: "Calendar",
@@ -52,7 +54,7 @@ const MainPage = () => {
       ),
       description: "Visualize your schedule and plan ahead",
       route: "/calendar",
-      color: theme.palette.success.light,
+      color: mode === "dark" ? "#232526" : theme.palette.success.light,
     },
   ];
 
@@ -74,8 +76,11 @@ const MainPage = () => {
         height: "100vh",
         display: "flex",
         flexDirection: "column",
-
         p: isMobile ? 2 : 4,
+        background:
+          mode === "dark"
+            ? "linear-gradient(135deg, #232526 0%, #414345 100%)"
+            : "linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%)",
       }}
     >
       <Box sx={{ textAlign: "center", mb: 6, mt: 4 }}>
@@ -84,7 +89,7 @@ const MainPage = () => {
           component="h1"
           sx={{
             fontWeight: 700,
-            color: theme.palette.text.primary,
+            color: mode === "dark" ? "#fff" : theme.palette.text.primary,
             mb: 2,
           }}
         >
@@ -93,7 +98,7 @@ const MainPage = () => {
         <Typography
           variant="subtitle1"
           sx={{
-            color: theme.palette.text.secondary,
+            color: mode === "dark" ? "#bdbdbd" : theme.palette.text.secondary,
             maxWidth: 600,
             mx: "auto",
           }}
@@ -129,7 +134,10 @@ const MainPage = () => {
                   cursor: "pointer",
                   backgroundColor: card.color,
                   backgroundImage:
-                    "linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7))",
+                    mode === "dark"
+                      ? "linear-gradient(rgba(45,47,49,0.95), rgba(45,47,49,0.95))"
+                      : "linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7))",
+                  color: mode === "dark" ? "#fff" : "#000",
                   transition: "all 0.3s ease",
                 }}
                 onClick={() => navigate(card.route)}
@@ -142,7 +150,8 @@ const MainPage = () => {
                     mt: 3,
                     mb: 2,
                     fontWeight: 600,
-                    color: theme.palette.text.primary,
+                    color:
+                      mode === "dark" ? "#fff" : theme.palette.text.primary,
                   }}
                 >
                   {card.title}
@@ -150,7 +159,10 @@ const MainPage = () => {
                 <Typography
                   variant="body1"
                   sx={{
-                    color: theme.palette.text.secondary,
+                    color:
+                      mode === "dark"
+                        ? "#bdbdbd"
+                        : theme.palette.text.secondary,
                     mb: 3,
                   }}
                 >
@@ -167,7 +179,10 @@ const MainPage = () => {
                   <Typography
                     variant="body2"
                     sx={{
-                      color: theme.palette.primary.main,
+                      color:
+                        mode === "dark"
+                          ? "#90caf9"
+                          : theme.palette.primary.main,
                       fontWeight: 500,
                     }}
                   >
